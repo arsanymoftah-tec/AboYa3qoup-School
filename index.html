@@ -10,6 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Zain:wght@400;700;800;900&family=Almarai:wght@400;700;800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -139,16 +140,41 @@ td .actions{display:flex;gap:4px;flex-wrap:wrap}
 .empty{text-align:center;padding:40px 20px;color:var(--text-3);display:flex;flex-direction:column;align-items:center;gap:10px}
 .empty i{font-size:36px;opacity:.4}
 
-.chart{display:flex;align-items:flex-end;gap:8px;height:180px;padding:12px 0 32px;border-bottom:1px solid var(--border);position:relative}
-.chart .bar{flex:1;min-height:4px;background:var(--primary);border-radius:6px 6px 0 0;position:relative}
-.chart .bar:hover{filter:brightness(1.15)}
-.chart .bar .v{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:700;color:var(--primary)}
-.chart .bar .l{position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--text-3);white-space:nowrap}
-.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:13px}
-.bar-row .n{min-width:110px;color:var(--text-2)}
-.bar-row .track{flex:1;height:18px;background:var(--surface-2);border-radius:20px;overflow:hidden;border:1px solid var(--border)}
-.bar-row .fill{height:100%;background:var(--primary);border-radius:20px;display:flex;align-items:center;justify-content:flex-end;padding-left:8px;color:#fff;font-size:11px;font-weight:700;transition:width .5s ease}
-.bar-row .v{min-width:50px;text-align:left;font-weight:700;font-size:12.5px}
+/* Charts */
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow-sm)}
+.chart-wrap{position:relative;height:280px}
+.chart-wrap.tall{height:340px}
+.chart-wrap.small{height:220px}
+
+/* Progress bar */
+.progress{height:10px;background:var(--surface-2);border-radius:20px;overflow:hidden;border:1px solid var(--border)}
+.progress .fill{height:100%;background:linear-gradient(90deg,var(--ok),var(--primary));transition:width .6s ease}
+
+/* Rank row */
+.rank-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-bottom:1px solid var(--border);font-size:13px}
+.rank-row:last-child{border-bottom:none}
+.rank-row .pos{width:24px;height:24px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.rank-row .pos.g1{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#fff}
+.rank-row .pos.g2{background:linear-gradient(135deg,#cbd5e1,#94a3b8);color:#fff}
+.rank-row .pos.g3{background:linear-gradient(135deg,#fb923c,#ea580c);color:#fff}
+.rank-row .nm{flex:1;font-weight:600}
+.rank-row .bar{flex:1;height:8px;background:var(--surface-2);border-radius:20px;overflow:hidden;max-width:180px}
+.rank-row .bar .fill{height:100%;background:var(--primary)}
+.rank-row .pct{min-width:44px;text-align:left;font-weight:700;font-size:12px;color:var(--primary)}
+
+/* Podium */
+.podium{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;align-items:end;margin:16px 0 12px}
+.podium .p{text-align:center;padding:14px 8px;border-radius:10px;background:var(--surface-2);border:1px solid var(--border)}
+.podium .p .avatar{width:44px;height:44px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#fff;margin-bottom:6px}
+.podium .p .nm{font-weight:700;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.podium .p .sc{font-size:11.5px;color:var(--text-3);margin-top:2px}
+.podium .p .medal{font-size:22px;line-height:1}
+.podium .first{background:linear-gradient(180deg,#fef3c7,#fde68a);border-color:#f59e0b;transform:scale(1.05)}
+[data-theme=dark] .podium .first{background:linear-gradient(180deg,#451a03,#78350f);border-color:#f59e0b}
+.podium .second{background:linear-gradient(180deg,#f1f5f9,#e2e8f0)}
+[data-theme=dark] .podium .second{background:linear-gradient(180deg,#1e293b,#334155)}
+.podium .third{background:linear-gradient(180deg,#fed7aa,#fdba74)}
+[data-theme=dark] .podium .third{background:linear-gradient(180deg,#431407,#7c2d12)}
 
 .modal{position:fixed;inset:0;z-index:2000;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(15,23,42,.55);backdrop-filter:blur(2px);animation:fade .2s ease}
 .modal.open{display:flex}
@@ -169,7 +195,6 @@ td .actions{display:flex;gap:4px;flex-wrap:wrap}
 .q-opt input[type=text]{flex:1}
 .q-opt input[type=radio],.q-opt input[type=checkbox]{width:16px;height:16px;accent-color:var(--primary);flex-shrink:0;cursor:pointer}
 .q-opt .del{width:26px;height:26px;border-radius:6px;background:var(--bad-soft);color:var(--bad);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
-.q-opt .del:hover{background:var(--bad);color:#fff}
 
 .toasts{position:fixed;bottom:20px;left:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;max-width:340px}
 .toast{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:8px;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow-lg);font-size:13.5px;animation:slide .25s ease}
@@ -202,31 +227,6 @@ td .actions{display:flex;gap:4px;flex-wrap:wrap}
 .feature h4{font-size:15px;margin-bottom:4px}
 .feature p{font-size:12.5px;color:var(--text-3)}
 
-.podium{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;align-items:end;margin:16px 0 12px}
-.podium .p{text-align:center;padding:14px 8px;border-radius:10px;background:var(--surface-2);border:1px solid var(--border);transition:transform var(--tr)}
-.podium .p:hover{transform:translateY(-3px)}
-.podium .p .avatar{width:44px;height:44px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#fff;margin-bottom:6px}
-.podium .p .nm{font-weight:700;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.podium .p .sc{font-size:11.5px;color:var(--text-3);margin-top:2px}
-.podium .p .medal{font-size:22px;line-height:1}
-.podium .first{background:linear-gradient(180deg,#fef3c7,#fde68a);border-color:#f59e0b;transform:scale(1.05)}
-[data-theme=dark] .podium .first{background:linear-gradient(180deg,#451a03,#78350f);border-color:#f59e0b}
-.podium .second{background:linear-gradient(180deg,#f1f5f9,#e2e8f0)}
-[data-theme=dark] .podium .second{background:linear-gradient(180deg,#1e293b,#334155)}
-.podium .third{background:linear-gradient(180deg,#fed7aa,#fdba74)}
-[data-theme=dark] .podium .third{background:linear-gradient(180deg,#431407,#7c2d12)}
-
-.rank-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-bottom:1px solid var(--border);font-size:13px}
-.rank-row:last-child{border-bottom:none}
-.rank-row .pos{width:24px;height:24px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
-.rank-row .pos.g1{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#fff}
-.rank-row .pos.g2{background:linear-gradient(135deg,#cbd5e1,#94a3b8);color:#fff}
-.rank-row .pos.g3{background:linear-gradient(135deg,#fb923c,#ea580c);color:#fff}
-.rank-row .nm{flex:1;font-weight:600}
-.rank-row .bar{flex:1;height:8px;background:var(--surface-2);border-radius:20px;overflow:hidden;max-width:180px}
-.rank-row .bar .fill{height:100%;background:var(--primary)}
-.rank-row .pct{min-width:44px;text-align:left;font-weight:700;font-size:12px;color:var(--primary)}
-
 .platform-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px}
 .platform-card:hover{border-color:var(--primary-soft);box-shadow:var(--shadow)}
 .platform-card .plat-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
@@ -252,9 +252,6 @@ td .actions{display:flex;gap:4px;flex-wrap:wrap}
 .field-dyn{display:flex;align-items:center;gap:6px;margin-bottom:5px}
 .field-dyn input{flex:1}
 
-/* exam progress bar */
-.progress{height:10px;background:var(--surface-2);border-radius:20px;overflow:hidden;border:1px solid var(--border);margin:10px 0}
-.progress .fill{height:100%;background:linear-gradient(90deg,var(--ok),var(--primary));transition:width .6s ease}
 .exam-take .question-card{background:var(--surface-2);border-radius:10px;padding:14px;margin-bottom:12px;border:1px solid var(--border)}
 .exam-take .q-title{font-weight:700;margin-bottom:10px;font-size:14.5px}
 .exam-take .q-opts{display:flex;flex-direction:column;gap:6px}
@@ -282,16 +279,12 @@ td .actions{display:flex;gap:4px;flex-wrap:wrap}
   .page-title{font-size:15px}
   .card{padding:14px}
   .form-row > *{flex-basis:100%}
-  .chart{height:130px}
   .auth-card{padding:22px 18px}
   .modal .box{padding:16px}
   .podium{grid-template-columns:1fr}
   .podium .first{transform:none}
-}
-@media print{
-  .sidebar,.topbar,.no-print,.btn{display:none!important}
-  .content{padding:0}
-  .card{box-shadow:none;border:1px solid #ccc;break-inside:avoid}
+  .chart-wrap{height:220px}
+  .chart-wrap.tall{height:280px}
 }
 </style>
 </head>
@@ -326,7 +319,7 @@ td .actions{display:flex;gap:4px;flex-wrap:wrap}
 <div class="modal" id="mScan"><div class="box small">
   <div class="modal-head"><h3><i class="fas fa-barcode"></i> مسح الباركود</h3><button class="close-x" onclick="window.closeScan()"><i class="fas fa-times"></i></button></div>
   <div style="border-radius:8px;overflow:hidden;border:2px solid var(--primary);background:#000;"><video id="barcodeVideo" autoplay playsinline muted style="width:100%;display:block;"></video></div>
-  <p class="muted center" style="margin-top:10px;color:var(--text-3)"><i class="fas fa-info-circle"></i> وجّه الكاميرا</p>
+  <p style="color:var(--text-3);text-align:center;font-size:13px;margin-top:10px"><i class="fas fa-info-circle"></i> وجّه الكاميرا</p>
   <div id="barcodeResult" style="margin-top:10px"></div>
 </div></div>
 
@@ -394,13 +387,11 @@ td .actions{display:flex;gap:4px;flex-wrap:wrap}
   <div id="resultBody"></div>
 </div></div>
 
-<!-- Take Exam Modal -->
 <div class="modal" id="mTakeExam"><div class="box wide">
   <div class="modal-head"><h3><i class="fas fa-pencil-alt"></i> <span id="takeExamTitle">الاختبار</span></h3><button class="close-x" onclick="window.closeTakeExam()"><i class="fas fa-times"></i></button></div>
   <div id="takeExamBody" class="exam-take"></div>
 </div></div>
 
-<!-- Add Student Modal (for teachers) -->
 <div class="modal" id="mStudentAdd"><div class="box">
   <div class="modal-head"><h3><i class="fas fa-user-graduate"></i> <span id="studentModalTitle">إضافة طالب</span></h3><button class="close-x" onclick="window.closeModal('mStudentAdd')"><i class="fas fa-times"></i></button></div>
   <form class="form" onsubmit="return window.saveStudent(event)">
@@ -421,13 +412,11 @@ td .actions{display:flex;gap:4px;flex-wrap:wrap}
   </form>
 </div></div>
 
-<!-- Grade management modal -->
 <div class="modal" id="mGrades"><div class="box wide">
   <div class="modal-head"><h3><i class="fas fa-star"></i> <span id="gradesModalTitle">إدارة الدرجات</span></h3><button class="close-x" onclick="window.closeModal('mGrades')"><i class="fas fa-times"></i></button></div>
   <div id="gradesBody"></div>
 </div></div>
 
-<!-- Grade edit form -->
 <div class="modal" id="mGradeEdit"><div class="box small">
   <div class="modal-head"><h3><i class="fas fa-star"></i> <span id="gradeEditTitle">إضافة درجة</span></h3><button class="close-x" onclick="window.closeModal('mGradeEdit')"><i class="fas fa-times"></i></button></div>
   <form class="form" onsubmit="return window.saveGrade(event)">
@@ -444,6 +433,67 @@ td .actions{display:flex;gap:4px;flex-wrap:wrap}
     <div style="display:flex;gap:8px;margin-top:8px">
       <button class="btn btn-primary" type="submit"><i class="fas fa-save"></i> حفظ</button>
       <button type="button" class="btn btn-secondary" onclick="window.closeModal('mGradeEdit')">إلغاء</button>
+    </div>
+  </form>
+</div></div>
+
+<!-- New Sheet Modal -->
+<div class="modal" id="mNewSheet"><div class="box small">
+  <div class="modal-head"><h3><i class="fas fa-plus"></i> إنشاء كشف درجات</h3><button class="close-x" onclick="window.closeModal('mNewSheet')"><i class="fas fa-times"></i></button></div>
+  <form class="form" onsubmit="return window.createGradeSheet(event)">
+    <div class="field"><label>اسم الكشف / الاختبار</label><input class="input" id="sheetName" required placeholder="مثل: امتحان الشهر الأول" /></div>
+    <div class="field"><label>النوع</label><select class="input" id="sheetKind"><option>تقييم أسبوعي</option><option>امتحان شهري</option><option>امتحان نهائي</option><option>واجب</option></select></div>
+    <div class="field"><label>المادة</label><select class="input" id="sheetSubject" required></select></div>
+    <button class="btn btn-primary" type="submit"><i class="fas fa-save"></i> إنشاء</button>
+  </form>
+</div></div>
+
+<!-- Platform Modal -->
+<div class="modal" id="mPlatform"><div class="box">
+  <div class="modal-head"><h3><i class="fas fa-globe"></i> <span id="platformModalTitle">إضافة منصة</span></h3><button class="close-x" onclick="window.closeModal('mPlatform')"><i class="fas fa-times"></i></button></div>
+  <form class="form" onsubmit="return window.savePlatform(event)">
+    <input type="hidden" id="platformId" />
+    <div class="form-row">
+      <div class="field" style="flex:2"><label>اسم المنصة</label><input class="input" id="platformName" required placeholder="كيريو..." /></div>
+      <div class="field"><label>اللون</label><input class="input" type="color" id="platformColor" value="#0f766e" style="height:38px" /></div>
+    </div>
+    <div class="form-row">
+      <div class="field"><label>الصف</label><select class="input" id="platformClass" required onchange="window.onPlatformClassChange()"></select></div>
+      <div class="field"><label>الفصل</label><select class="input" id="platformSection"><option value="">كل الفصول</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="field"><label>المادة (اختياري)</label><select class="input" id="platformSubject"><option value="">بدون مادة</option></select></div>
+    </div>
+    <div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <label style="font-size:13px;font-weight:700">الحقول</label>
+        <button type="button" class="btn btn-secondary btn-xs" onclick="window.addPlatformField()"><i class="fas fa-plus"></i> حقل</button>
+      </div>
+      <div id="platformFields"></div>
+    </div>
+    <div id="platformMsg"></div>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="btn btn-primary" type="submit"><i class="fas fa-save"></i> حفظ</button>
+      <button type="button" class="btn btn-secondary" onclick="window.closeModal('mPlatform')">إلغاء</button>
+    </div>
+  </form>
+</div></div>
+
+<div class="modal" id="mPlatformStudents"><div class="box wide">
+  <div class="modal-head"><h3><i class="fas fa-users"></i> <span id="platformStudentsTitle">بيانات المنصة</span></h3><button class="close-x" onclick="window.closeModal('mPlatformStudents')"><i class="fas fa-times"></i></button></div>
+  <div id="platformStudentsBody"></div>
+</div></div>
+
+<div class="modal" id="mStudentPlatform"><div class="box">
+  <div class="modal-head"><h3><i class="fas fa-key"></i> <span id="spModalTitle">بيانات الطالب</span></h3><button class="close-x" onclick="window.closeModal('mStudentPlatform')"><i class="fas fa-times"></i></button></div>
+  <form class="form" onsubmit="return window.saveStudentPlatform(event)">
+    <input type="hidden" id="spId" />
+    <input type="hidden" id="spPlatformId" />
+    <div class="field"><label>الطالب</label><select class="input" id="spStudentSelect" required></select></div>
+    <div id="spFieldsBox"></div>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="btn btn-primary" type="submit"><i class="fas fa-save"></i> حفظ</button>
+      <button type="button" class="btn btn-secondary" onclick="window.closeModal('mStudentPlatform')">إلغاء</button>
     </div>
   </form>
 </div></div>
@@ -476,6 +526,8 @@ let saving = false;
 let pollTimer = null;
 let examTimer = null;
 let currentTakeExam = null;
+let currentSheetInfo = null;
+let charts = {};
 
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -509,8 +561,8 @@ function toast(msg, type='info'){
 function openModal(id){ document.getElementById(id)?.classList.add('open'); }
 function closeModal(id){ document.getElementById(id)?.classList.remove('open'); }
 
-/* ============ SCHEMA v5 ============ */
-const SCHEMA_VERSION = 5;
+/* ============ SCHEMA ============ */
+const SCHEMA_VERSION = 6;
 const DEFAULT_DB = () => ({
   meta: { version: SCHEMA_VERSION, createdAt: nowIso(), lastUpdate: nowIso(), schoolName: 'مدرستي' },
   users: [], classes: [], sections: [], students: [], subjects: [],
@@ -540,11 +592,12 @@ function migrate(d){
     visible: e.visible !== false, shuffle: e.shuffle === true,
     attempts: Number(e.attempts) || 1, duration: Number(e.duration) || 30, code: e.code || ''
   }));
-  d.examResults = d.examResults.map(r => ({
-    ...r, answers: r.answers || {}, score: Number(r.score) || 0, max: Number(r.max) || 0,
-    attempt: Number(r.attempt) || 1, status: r.status || 'completed'
+  d.examResults = d.examResults.map(r => ({ ...r, answers: r.answers || {}, score: Number(r.score) || 0, max: Number(r.max) || 0, attempt: Number(r.attempt) || 1, status: r.status || 'completed' }));
+  d.platforms = d.platforms.map(p => ({
+    ...p, fields: Array.isArray(p.fields) ? p.fields : [],
+    classId: p.classId || null, sectionId: p.sectionId || null, subjectId: p.subjectId || null,
+    createdBy: p.createdBy || null, createdByRole: p.createdByRole || 'admin'
   }));
-  d.platforms = d.platforms.map(p => ({ ...p, fields: Array.isArray(p.fields) ? p.fields : [] }));
   d.timetables = d.timetables.map(t => ({ ...t, entries: Array.isArray(t.entries) ? t.entries : [] }));
   d.meta.version = SCHEMA_VERSION;
   return d;
@@ -603,10 +656,19 @@ function applyTheme(t){
   localStorage.setItem('theme_teacher', t);
   const ico = $('.theme-toggle i'); if (ico) ico.className = t === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
 }
-function toggleTheme(){ applyTheme(theme === 'light' ? 'dark' : 'light'); }
+function toggleTheme(){
+  applyTheme(theme === 'light' ? 'dark' : 'light');
+  // re-render charts with new theme
+  setTimeout(() => { if (route === 'analytics') initCharts(); }, 100);
+}
 function openSidebar(){ $('#sidebar').classList.add('open'); $('#backdrop').style.display = 'block'; }
 function closeSidebar(){ $('#sidebar').classList.remove('open'); $('#backdrop').style.display = 'none'; }
-function go(r, param=null){ route = r; routeParam = param; closeSidebar(); render(); window.scrollTo({top:0, behavior:'smooth'}); }
+function go(r, param=null){
+  // destroy charts before navigation
+  Object.keys(charts).forEach(k => { try { charts[k].destroy(); } catch(e){} });
+  charts = {};
+  route = r; routeParam = param; closeSidebar(); render(); window.scrollTo({top:0, behavior:'smooth'});
+}
 
 /* ============ BARCODE ============ */
 function barcodeSVG(code, opts={}){
@@ -743,6 +805,31 @@ function myClasses(){
   const secs = mySections().map(sid => DATA.sections.find(s=>s.id===sid)).filter(Boolean);
   return [...new Set(secs.map(s=>s.classId))];
 }
+// المنصات المتاحة للمعلم: التي صفها/فصلها/مادتها في نطاقه
+function myPlatforms(){
+  if (!me) return [];
+  if (me.role === 'admin') return DATA.platforms;
+  const mySecs = mySections();
+  const mySubs = mySubjects();
+  const myCls = myClasses();
+  return DATA.platforms.filter(p => {
+    if (p.sectionId && !mySecs.includes(p.sectionId)) return false;
+    if (!p.sectionId && p.classId && !myCls.includes(p.classId)) return false;
+    if (p.subjectId && !mySubs.includes(p.subjectId) && p.createdBy !== me.id) return false;
+    return true;
+  });
+}
+function canEditPlatform(p){
+  if (!me) return false;
+  if (me.role === 'admin') return true;
+  // created by me
+  if (p.createdBy === me.id) return true;
+  // belongs to my sections/classes/subjects
+  const mySecs = mySections(), mySubs = mySubjects(), myCls = myClasses();
+  if (p.sectionId && mySecs.includes(p.sectionId)) return true;
+  if (!p.sectionId && p.classId && myCls.includes(p.classId)) return true;
+  return false;
+}
 function myExamsList(){
   if (!me) return [];
   if (me.role === 'admin') return DATA.exams;
@@ -758,7 +845,7 @@ function computeStudentScore(st){
   const sResults = DATA.examResults.filter(r=>r.studentId===st.id && r.status==='completed');
   const avgExam = sResults.length ? sResults.reduce((s,r)=>s + (r.max?(r.score/r.max)*100:0), 0) / sResults.length : 0;
   const count = sAtt.length + sGrades.length + sResults.length;
-  return { st, score: count > 0 ? (attPct*0.4 + avgGrade*0.3 + avgExam*0.3) : 0, count };
+  return { st, score: count > 0 ? (attPct*0.4 + avgGrade*0.3 + avgExam*0.3) : 0, attPct, avgGrade, avgExam, count };
 }
 
 /* ============ SIDEBAR / TOPBAR ============ */
@@ -776,11 +863,11 @@ function renderSidebar(){
       <div class="grp">الطلاب</div>
       <a class="${route==='myStudents'?'active':''}" onclick="window.go('myStudents')"><i class="fas fa-user-graduate"></i> طلابي</a>
       <a class="${route==='lookup'?'active':''}" onclick="window.go('lookup')"><i class="fas fa-search"></i> استعلام طالب</a>
-      <a class="${route==='platforms'?'active':''}" onclick="window.go('platforms')"><i class="fas fa-globe"></i> منصات الطلاب</a>
-      <a class="${route==='timetables'?'active':''}" onclick="window.go('timetables')"><i class="fas fa-calendar-alt"></i> جداول الحصص</a>
+      <a class="${route==='platforms'?'active':''}" onclick="window.go('platforms')"><i class="fas fa-globe"></i> المنصات</a>
+      <a class="${route==='timetables'?'active':''}" onclick="window.go('timetables')"><i class="fas fa-calendar-alt"></i> الجداول</a>
       <div class="grp">العمليات</div>
       <a class="${route==='attendance'?'active':''}" onclick="window.go('attendance')"><i class="fas fa-clipboard-list"></i> الحضور</a>
-      <a class="${route==='grades'?'active':''}" onclick="window.go('grades')"><i class="fas fa-star"></i> الدرجات</a>
+      <a class="${route==='grades'?'active':''}" onclick="window.go('grades')"><i class="fas fa-star"></i> كشوف الدرجات</a>
       <a class="${route==='exams'?'active':''}" onclick="window.go('exams')"><i class="fas fa-pencil-alt"></i> الاختبارات</a>
       <div class="grp">الحساب</div>
       <a onclick="window.openAccount()"><i class="fas fa-user-edit"></i> بيانات حسابي</a>
@@ -790,7 +877,7 @@ function renderSidebar(){
     nav.innerHTML = `
       <div class="grp">القائمة</div>
       <a class="${route==='home'?'active':''}" onclick="window.go('home')"><i class="fas fa-home"></i> الرئيسية</a>
-      <a class="${route==='auth'?'active':''}" onclick="window.go('auth')"><i class="fas fa-sign-in-alt"></i> تسجيل الدخول / حساب</a>
+      <a class="${route==='auth'?'active':''}" onclick="window.go('auth')"><i class="fas fa-sign-in-alt"></i> تسجيل الدخول</a>
       <a class="${route==='lookup'?'active':''}" onclick="window.go('lookup')"><i class="fas fa-search"></i> استعلام طالب</a>`;
   }
 }
@@ -799,8 +886,8 @@ function renderTopBar(){
     home:['home','الرئيسية'], auth:['sign-in-alt','تسجيل الدخول'],
     dashboard:['chart-pie','لوحتي'], analytics:['chart-line','التحليلات'],
     leaderboard:['trophy','أفضل الطلاب'], myStudents:['user-graduate','طلابي'],
-    platforms:['globe','منصات الطلاب'], timetables:['calendar-alt','جداول الحصص'],
-    attendance:['clipboard-list','الحضور'], grades:['star','الدرجات'],
+    platforms:['globe','المنصات'], timetables:['calendar-alt','جداول الحصص'],
+    attendance:['clipboard-list','الحضور'], grades:['star','كشوف الدرجات'],
     exams:['pencil-alt','الاختبارات'], lookup:['search','استعلام طالب'],
     studentReport:['file-alt','تقرير طالب']
   };
@@ -815,17 +902,17 @@ function viewHome(){
       <div class="hero">
         <div class="logo"><i class="fas fa-chalkboard-teacher"></i></div>
         <h1>لوحة المعلم</h1>
-        <p>سجّل حضور طلابك بالباركود، أضف درجاتك، أنشئ اختباراتك، وتابع أفضل طلابك.</p>
+        <p>سجّل حضور طلابك، أضف الدرجات، أنشئ الاختبارات، أدر المنصات، وتابع التحليلات.</p>
         <div class="cta">
-          <button class="btn btn-primary" onclick="window.go('auth')"><i class="fas fa-sign-in-alt"></i> دخول / حساب جديد</button>
+          <button class="btn btn-primary" onclick="window.go('auth')"><i class="fas fa-sign-in-alt"></i> دخول / حساب</button>
           <button class="btn btn-secondary" onclick="window.go('lookup')"><i class="fas fa-search"></i> استعلام طالب</button>
         </div>
       </div>
       <div class="features">
         <div class="feature"><div class="ico"><i class="fas fa-barcode"></i></div><h4>حضور بالباركود</h4><p>امسح الباركود بالكاميرا</p></div>
-        <div class="feature"><div class="ico"><i class="fas fa-globe"></i></div><h4>منصات الطلاب</h4><p>بيانات دخول كيريو وغيرها</p></div>
-        <div class="feature"><div class="ico"><i class="fas fa-calendar-alt"></i></div><h4>جداول الحصص</h4><p>جدول أسبوعي لكل فصل</p></div>
-        <div class="feature"><div class="ico"><i class="fas fa-trophy"></i></div><h4>أفضل الطلاب</h4><p>ترتيب تنافسي لكل فصل</p></div>
+        <div class="feature"><div class="ico"><i class="fas fa-globe"></i></div><h4>إدارة المنصات</h4><p>أضف منصات لفصولك</p></div>
+        <div class="feature"><div class="ico"><i class="fas fa-chart-line"></i></div><h4>تحليلات ذكية</h4><p>رسوم بيانية تفاعلية</p></div>
+        <div class="feature"><div class="ico"><i class="fas fa-trophy"></i></div><h4>أفضل الطلاب</h4><p>ترتيب تنافسي</p></div>
       </div>
     </div>`;
 }
@@ -865,7 +952,6 @@ window.authTab = function(t){
         <div class="field"><label>تأكيد كلمة المرور</label><input class="input" type="password" name="confirm" required minlength="6" /></div>
         <div id="authMsg"></div>
         <button class="btn btn-primary btn-block" type="submit"><i class="fas fa-user-plus"></i> إنشاء حساب</button>
-        <p style="color:var(--text-3);text-align:center;font-size:12px;margin-top:8px">سيتم مراجعة حسابك من الأدمن.</p>
       </form>`;
   }
 };
@@ -917,15 +1003,15 @@ window.updateAccount = async function(ev){
   if (!name || !username) { msg.innerHTML = '<div class="alert alert-error">أكمل.</div>'; return false; }
   if (username !== u.username && DATA.users.some(x => x.username === username && x.id !== u.id)) { msg.innerHTML = '<div class="alert alert-error">مستخدم.</div>'; return false; }
   if (newPass || newPass2) {
-    if (!oldPass) { msg.innerHTML = '<div class="alert alert-error">أدخل كلمة المرور الحالية.</div>'; return false; }
+    if (!oldPass) { msg.innerHTML = '<div class="alert alert-error">أدخل الحالية.</div>'; return false; }
     const oldH = await hash(oldPass);
     if (u.passwordHash !== oldH) { msg.innerHTML = '<div class="alert alert-error">الحالية خاطئة.</div>'; return false; }
     if (newPass !== newPass2) { msg.innerHTML = '<div class="alert alert-error">مختلفتان.</div>'; return false; }
-    if (newPass.length < 6) { msg.innerHTML = '<div class="alert alert-error">6+ أحرف.</div>'; return false; }
+    if (newPass.length < 6) { msg.innerHTML = '<div class="alert alert-error">6+.</div>'; return false; }
     u.passwordHash = await hash(newPass);
   }
   u.name = name; u.username = username;
-  if (!await saveData()) { msg.innerHTML = '<div class="alert alert-error">فشل الحفظ.</div>'; return false; }
+  if (!await saveData()) { msg.innerHTML = '<div class="alert alert-error">فشل.</div>'; return false; }
   me.name = name; me.username = username; saveMe(me);
   toast('✅ تحديث', 'success'); closeModal('mAccount'); render();
   return false;
@@ -954,6 +1040,7 @@ function viewDashboard(){
         <button class="btn btn-secondary" onclick="window.go('attendance')"><i class="fas fa-clipboard-list"></i> الحضور</button>
         <button class="btn btn-secondary" onclick="window.go('grades')"><i class="fas fa-star"></i> الدرجات</button>
         <button class="btn btn-secondary" onclick="window.go('exams')"><i class="fas fa-pencil-alt"></i> الاختبارات</button>
+        <button class="btn btn-secondary" onclick="window.go('analytics')"><i class="fas fa-chart-line"></i> التحليلات</button>
         <button class="btn btn-secondary" onclick="window.go('leaderboard')"><i class="fas fa-trophy"></i> أفضل الطلاب</button>
       </div>
       <div class="card">
@@ -970,43 +1057,188 @@ function viewDashboard(){
     </div>`;
 }
 
-/* ============ ANALYTICS ============ */
+/* ============ ANALYTICS (with charts) ============ */
 function viewAnalytics(){
   const mySt = myStudents();
   const myStIds = new Set(mySt.map(s=>s.id));
   const att = DATA.attendance.filter(a=>a.targetType==='student' && myStIds.has(a.targetId));
   const grades = DATA.grades.filter(g=>myStIds.has(g.studentId));
-  const dayMap = {};
-  att.forEach(a => { if (!dayMap[a.date]) dayMap[a.date] = {p:0, ab:0}; if (a.status==='حاضر') dayMap[a.date].p++; else dayMap[a.date].ab++; });
-  const days = Object.keys(dayMap).sort().slice(-14);
-  const maxDay = Math.max(1, ...days.map(d => dayMap[d].p + dayMap[d].ab));
-  const subjAvg = {};
-  grades.forEach(g => { if (!subjAvg[g.subjectId]) subjAvg[g.subjectId] = { sum:0, count:0 }; subjAvg[g.subjectId].sum += g.max ? (g.score/g.max)*100 : 0; subjAvg[g.subjectId].count++; });
+  const exams = myExamsList();
+  const examResults = DATA.examResults.filter(r => exams.some(e=>e.id===r.examId) && myStIds.has(r.studentId));
   const attPct = att.length ? Math.round(att.filter(a=>a.status==='حاضر').length / att.length * 100) : 0;
   const avgGrade = grades.length ? Math.round(grades.reduce((s,g)=>s + (g.max?(g.score/g.max)*100:0), 0) / grades.length) : 0;
+  const avgExam = examResults.length ? Math.round(examResults.reduce((s,r)=>s + (r.max?(r.score/r.max)*100:0), 0) / examResults.length) : 0;
+  
   return `
     <div class="container">
       <div class="stats" style="margin-bottom:16px">
         <div class="stat"><div class="ico" style="background:var(--primary-soft);color:var(--primary)"><i class="fas fa-user-graduate"></i></div><div><div class="num">${mySt.length}</div><div class="lbl">طلابي</div></div></div>
         <div class="stat"><div class="ico" style="background:var(--ok-soft);color:var(--ok)"><i class="fas fa-check-circle"></i></div><div><div class="num">${attPct}%</div><div class="lbl">نسبة الحضور</div></div></div>
         <div class="stat"><div class="ico" style="background:var(--warn-soft);color:var(--warn)"><i class="fas fa-star"></i></div><div><div class="num">${avgGrade}%</div><div class="lbl">متوسط الدرجات</div></div></div>
+        <div class="stat"><div class="ico" style="background:var(--info-soft);color:var(--info)"><i class="fas fa-pencil-alt"></i></div><div><div class="num">${avgExam}%</div><div class="lbl">متوسط الاختبارات</div></div></div>
       </div>
-      <div class="card" style="margin-bottom:14px">
-        <div class="card-head"><h3><i class="fas fa-chart-bar"></i> الحضور اليومي (آخر 14 يوم)</h3></div>
-        ${days.length===0 ? '<div class="empty">لا بيانات</div>' : `
-        <div class="chart">
-          ${days.map(d => { const tot = dayMap[d].p + dayMap[d].ab; const h = tot > 0 ? (tot/maxDay)*100 : 0; return `<div class="bar" style="height:${Math.max(h,4)}%" title="${d}: ${dayMap[d].p} حاضر، ${dayMap[d].ab} غائب"><span class="v">${tot}</span><span class="l">${d.slice(5)}</span></div>`; }).join('')}
-        </div>`}
+      
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-bottom:14px">
+        <div class="chart-card">
+          <div class="card-head"><h3><i class="fas fa-chart-bar" style="color:var(--primary)"></i> الحضور اليومي</h3></div>
+          <div class="chart-wrap"><canvas id="chartAttDaily"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="card-head"><h3><i class="fas fa-chart-pie" style="color:var(--primary)"></i> نسبة الحضور/الغياب</h3></div>
+          <div class="chart-wrap"><canvas id="chartAttPie"></canvas></div>
+        </div>
       </div>
+      
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-bottom:14px">
+        <div class="chart-card">
+          <div class="card-head"><h3><i class="fas fa-book" style="color:var(--primary)"></i> متوسط الدرجات بالمواد</h3></div>
+          <div class="chart-wrap"><canvas id="chartSubjAvg"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="card-head"><h3><i class="fas fa-layer-group" style="color:var(--primary)"></i> توزيع الطلاب على الفصول</h3></div>
+          <div class="chart-wrap"><canvas id="chartSecDist"></canvas></div>
+        </div>
+      </div>
+      
+      <div class="chart-card" style="margin-bottom:14px">
+        <div class="card-head"><h3><i class="fas fa-chart-line" style="color:var(--primary)"></i> تطور الدرجات (آخر كشوف)</h3></div>
+        <div class="chart-wrap tall"><canvas id="chartGradeTrend"></canvas></div>
+      </div>
+      
       <div class="card">
-        <div class="card-head"><h3><i class="fas fa-book"></i> متوسط الدرجات بالمواد</h3></div>
-        ${Object.keys(subjAvg).length===0 ? '<div class="empty">لا بيانات</div>' : Object.keys(subjAvg).map(sid => {
-          const subj = DATA.subjects.find(s=>s.id===sid);
-          const avg = Math.round(subjAvg[sid].sum / subjAvg[sid].count);
-          return `<div class="bar-row"><div class="n">${esc(subj?.name||'—')}</div><div class="track"><div class="fill" style="width:${avg}%">${avg}%</div></div><div class="v">${subjAvg[sid].count}</div></div>`;
-        }).join('')}
+        <div class="card-head"><h3><i class="fas fa-table" style="color:var(--primary)"></i> ملخص إحصائي</h3></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>البند</th><th>القيمة</th></tr></thead>
+          <tbody>
+            <tr><td>عدد طلابي</td><td><strong>${mySt.length}</strong></td></tr>
+            <tr><td>عدد فصولي</td><td><strong>${mySections().length}</strong></td></tr>
+            <tr><td>إجمالي سجلات الحضور</td><td><strong>${att.length}</strong></td></tr>
+            <tr><td>سجلات الحضور (حاضر)</td><td><strong style="color:var(--ok)">${att.filter(a=>a.status==='حاضر').length}</strong></td></tr>
+            <tr><td>سجلات الحضور (غائب)</td><td><strong style="color:var(--bad)">${att.filter(a=>a.status==='غائب').length}</strong></td></tr>
+            <tr><td>إجمالي الدرجات المسجلة</td><td><strong>${grades.length}</strong></td></tr>
+            <tr><td>عدد الاختبارات</td><td><strong>${exams.length}</strong></td></tr>
+            <tr><td>مشاركات الاختبارات</td><td><strong>${examResults.length}</strong></td></tr>
+          </tbody>
+        </table></div>
       </div>
     </div>`;
+}
+
+function initCharts(){
+  const mySt = myStudents();
+  const myStIds = new Set(mySt.map(s=>s.id));
+  const att = DATA.attendance.filter(a=>a.targetType==='student' && myStIds.has(a.targetId));
+  const grades = DATA.grades.filter(g=>myStIds.has(g.studentId));
+  const isDark = theme === 'dark';
+  const textColor = isDark ? '#e5e7eb' : '#111827';
+  const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)';
+  Chart.defaults.font.family = "'Almarai', sans-serif";
+  Chart.defaults.color = textColor;
+
+  // 1. Attendance daily (last 14 days)
+  const dayMap = {};
+  att.forEach(a => { if (!dayMap[a.date]) dayMap[a.date] = {p:0, ab:0}; if (a.status==='حاضر') dayMap[a.date].p++; else dayMap[a.date].ab++; });
+  const days = Object.keys(dayMap).sort().slice(-14);
+  const dayLabels = days.map(d => d.slice(5));
+  const elAttDaily = $('#chartAttDaily');
+  if (elAttDaily) {
+    if (charts.attDaily) charts.attDaily.destroy();
+    charts.attDaily = new Chart(elAttDaily, {
+      type: 'bar',
+      data: {
+        labels: dayLabels.length ? dayLabels : ['لا بيانات'],
+        datasets: [
+          { label: 'حاضر', data: days.map(d=>dayMap[d].p), backgroundColor: '#10b981', borderRadius: 6 },
+          { label: 'غائب', data: days.map(d=>dayMap[d].ab), backgroundColor: '#ef4444', borderRadius: 6 }
+        ]
+      },
+      options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true, grid: { color: gridColor } }, y: { stacked: true, grid: { color: gridColor }, beginAtZero: true } } }
+    });
+  }
+
+  // 2. Pie: present vs absent
+  const present = att.filter(a=>a.status==='حاضر').length;
+  const absent = att.filter(a=>a.status==='غائب').length;
+  const elAttPie = $('#chartAttPie');
+  if (elAttPie) {
+    if (charts.attPie) charts.attPie.destroy();
+    charts.attPie = new Chart(elAttPie, {
+      type: 'doughnut',
+      data: {
+        labels: ['حاضر', 'غائب'],
+        datasets: [{ data: present+absent ? [present, absent] : [1, 0], backgroundColor: ['#10b981', '#ef4444'], borderWidth: 0 }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+    });
+  }
+
+  // 3. Subject average
+  const subjAvg = {};
+  grades.forEach(g => { if (!subjAvg[g.subjectId]) subjAvg[g.subjectId] = { sum:0, count:0 }; subjAvg[g.subjectId].sum += g.max ? (g.score/g.max)*100 : 0; subjAvg[g.subjectId].count++; });
+  const subjLabels = Object.keys(subjAvg).map(sid => DATA.subjects.find(s=>s.id===sid)?.name || '—');
+  const subjValues = Object.keys(subjAvg).map(sid => Math.round(subjAvg[sid].sum / subjAvg[sid].count));
+  const elSubjAvg = $('#chartSubjAvg');
+  if (elSubjAvg) {
+    if (charts.subjAvg) charts.subjAvg.destroy();
+    charts.subjAvg = new Chart(elSubjAvg, {
+      type: 'bar',
+      data: {
+        labels: subjLabels.length ? subjLabels : ['لا مواد'],
+        datasets: [{ label: 'متوسط %', data: subjLabels.length ? subjValues : [0], backgroundColor: '#0f766e', borderRadius: 6 }]
+      },
+      options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, max: 100, grid: { color: gridColor } }, y: { grid: { color: gridColor } } } }
+    });
+  }
+
+  // 4. Section distribution
+  const secDist = {};
+  mySt.forEach(s => { const sec = DATA.sections.find(x=>x.id===s.sectionId); if (sec) { secDist[sec.name] = (secDist[sec.name]||0) + 1; } });
+  const secLabels = Object.keys(secDist);
+  const secValues = Object.values(secDist);
+  const elSecDist = $('#chartSecDist');
+  if (elSecDist) {
+    if (charts.secDist) charts.secDist.destroy();
+    charts.secDist = new Chart(elSecDist, {
+      type: 'polarArea',
+      data: {
+        labels: secLabels.length ? secLabels : ['لا فصول'],
+        datasets: [{ data: secLabels.length ? secValues : [1], backgroundColor: ['#0f766e','#7c3aed','#f59e0b','#2563eb','#dc2626','#059669'] }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+    });
+  }
+
+  // 5. Grade trend (by sheet name)
+  const sheetMap = {};
+  grades.forEach(g => {
+    const name = g.examName || g.kind;
+    if (!sheetMap[name]) sheetMap[name] = { sum:0, count:0 };
+    sheetMap[name].sum += g.max ? (g.score/g.max)*100 : 0;
+    sheetMap[name].count++;
+  });
+  const sheetLabels = Object.keys(sheetMap).slice(-10);
+  const sheetValues = sheetLabels.map(l => Math.round(sheetMap[l].sum / sheetMap[l].count));
+  const elTrend = $('#chartGradeTrend');
+  if (elTrend) {
+    if (charts.trend) charts.trend.destroy();
+    charts.trend = new Chart(elTrend, {
+      type: 'line',
+      data: {
+        labels: sheetLabels.length ? sheetLabels : ['لا بيانات'],
+        datasets: [{
+          label: 'متوسط %',
+          data: sheetLabels.length ? sheetValues : [0],
+          borderColor: '#0f766e',
+          backgroundColor: 'rgba(15,118,110,0.15)',
+          tension: 0.4,
+          fill: true,
+          pointBackgroundColor: '#0f766e',
+          pointRadius: 5
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } }, scales: { y: { beginAtZero: true, max: 100, grid: { color: gridColor } }, x: { grid: { color: gridColor } } } }
+    });
+  }
 }
 
 /* ============ LEADERBOARD ============ */
@@ -1032,7 +1264,7 @@ function viewLeaderboard(){
         const secIds = grp.sections.map(s=>s.id);
         const secStudents = DATA.students.filter(s=>secIds.includes(s.sectionId));
         const stats = secStudents.map(computeStudentScore).filter(x => x.count > 0).sort((a,b) => b.score - a.score);
-        if (!stats.length) return `<div class="card" style="margin-bottom:14px"><div class="card-head"><h3>${esc(grp.class?.name || 'فصولي')}</h3></div><div class="empty">لا بيانات كافية</div></div>`;
+        if (!stats.length) return `<div class="card" style="margin-bottom:14px"><div class="card-head"><h3>${esc(grp.class?.name || 'فصولي')}</h3></div><div class="empty">لا بيانات</div></div>`;
         const [first, second, third, ...rest] = stats;
         return `<div class="card" style="margin-bottom:14px">
           <div class="card-head"><h3><i class="fas fa-layer-group"></i> ${esc(grp.class?.name || 'فصولي')} <span style="color:var(--text-3)">(${secStudents.length} طالب)</span></h3></div>
@@ -1047,12 +1279,11 @@ function viewLeaderboard(){
     </div>`;
 }
 
-/* ============ MY STUDENTS + ADD/EDIT ============ */
+/* ============ MY STUDENTS ============ */
 let mQ = '';
 function viewMyStudents(){
   let list = myStudents();
   if (mQ) { const q = mQ.toLowerCase(); list = list.filter(s=>s.name.toLowerCase().includes(q)||s.code.toLowerCase().includes(q)); }
-  const mySecs = mySections().map(sid => DATA.sections.find(s=>s.id===sid)).filter(Boolean);
   return `
     <div class="container">
       <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
@@ -1138,33 +1369,234 @@ window.deleteStudent = function(id){
   });
 };
 
-/* ============ PLATFORMS ============ */
+/* ============ PLATFORMS (NEW) ============ */
 function viewPlatforms(){
+  const visiblePlatforms = myPlatforms();
   return `
     <div class="container">
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="window.openPlatformAdd()"><i class="fas fa-plus"></i> إضافة منصة</button>
+      </div>
       <div class="card" style="margin-bottom:14px">
-        <div class="card-head"><h3><i class="fas fa-globe"></i> منصات الطلاب</h3></div>
-        <p style="color:var(--text-3);font-size:12.5px">عرض بيانات دخول طلابك في المنصات (كيريو وغيرها). الأدمن هو من يضيف المنصات.</p>
-        ${DATA.platforms.length===0 ? '<div class="empty"><i class="fas fa-globe"></i><div>لا منصات بعد</div></div>' : `
+        <div class="card-head"><h3><i class="fas fa-globe"></i> المنصات المتاحة (${visiblePlatforms.length})</h3></div>
+        <p style="color:var(--text-3);font-size:12.5px">يمكنك إضافة منصات لفصولك/صفوفك، وتعديل/حذف المنصات التي أنشأتها أو التي تخص فصولك.</p>
+        ${visiblePlatforms.length===0 ? '<div class="empty"><i class="fas fa-globe"></i><div>لا منصات بعد</div></div>' : `
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px">
-          ${DATA.platforms.map(p => {
+          ${visiblePlatforms.map(p => {
             const myStIds = new Set(myStudents().map(s=>s.id));
             const usage = DATA.studentPlatforms.filter(sp => sp.platformId === p.id && myStIds.has(sp.studentId)).length;
+            const cls = DATA.classes.find(c=>c.id===p.classId);
+            const sec = DATA.sections.find(s=>s.id===p.sectionId);
+            const subj = DATA.subjects.find(s=>s.id===p.subjectId);
+            const canEdit = canEditPlatform(p);
+            const createdByMe = p.createdBy === me.id;
             return `<div class="platform-card">
               <div class="plat-head">
                 <div class="plat-logo" style="background:${esc(p.color||'#0f766e')}">${esc((p.name||'?').charAt(0))}</div>
                 <div style="flex:1;min-width:0">
                   <div class="plat-name">${esc(p.name)}</div>
-                  <div class="plat-sub">${usage} من طلابي مسجلون</div>
+                  <div class="plat-sub">${usage} من طلابي مسجلون · ${createdByMe?'أنشأتها أنت':'أنشأها الأدمن'}</div>
                 </div>
               </div>
+              <div style="font-size:11.5px;color:var(--text-3);margin-bottom:8px">
+                ${cls?`<span class="chip">${esc(cls.name)}</span>`:''}
+                ${sec?`<span class="chip">${esc(sec.name)}</span>`:''}
+                ${subj?`<span class="chip">${esc(subj.name)}</span>`:''}
+              </div>
               <div style="font-size:11.5px;color:var(--text-3);margin-bottom:6px">الحقول: ${(p.fields||[]).map(f=>`<span class="chip">${esc(f.name)}</span>`).join(' ')||'—'}</div>
+              <div style="display:flex;gap:4px;flex-wrap:wrap">
+                <button class="btn btn-primary btn-xs" onclick="window.viewPlatformStudents('${p.id}')"><i class="fas fa-users"></i> بيانات الطلاب</button>
+                ${canEdit ? `<button class="btn btn-warn btn-xs" onclick="window.openPlatformEdit('${p.id}')"><i class="fas fa-edit"></i> تعديل</button>` : ''}
+                ${canEdit ? `<button class="btn btn-danger btn-xs" onclick="window.deletePlatform('${p.id}')"><i class="fas fa-trash"></i></button>` : ''}
+              </div>
             </div>`;
           }).join('')}
         </div>`}
       </div>
     </div>`;
 }
+
+window.openPlatformAdd = function(){
+  $('#platformModalTitle').textContent = 'إضافة منصة';
+  $('#platformId').value = '';
+  $('#platformName').value = '';
+  $('#platformColor').value = '#0f766e';
+  $('#platformFields').innerHTML = '';
+  $('#platformMsg').innerHTML = '';
+  addPlatformField('اسم المستخدم', 'username');
+  addPlatformField('كلمة المرور', 'password');
+  // Fill allowed classes
+  const myCls = myClasses();
+  $('#platformClass').innerHTML = `<option value="">اختر الصف</option>${myCls.map(cid => {
+    const c = DATA.classes.find(x=>x.id===cid);
+    return c ? `<option value="${c.id}">${esc(c.name)}</option>` : '';
+  }).join('')}`;
+  $('#platformSection').innerHTML = '<option value="">كل الفصول</option>';
+  const mySubs = mySubjects();
+  $('#platformSubject').innerHTML = `<option value="">بدون مادة</option>${mySubs.map(sid => {
+    const s = DATA.subjects.find(x=>x.id===sid);
+    return s ? `<option value="${s.id}">${esc(s.name)}</option>` : '';
+  }).join('')}`;
+  openModal('mPlatform');
+};
+window.openPlatformEdit = function(id){
+  const p = DATA.platforms.find(x=>x.id===id); if (!p || !canEditPlatform(p)) return;
+  $('#platformModalTitle').textContent = 'تعديل منصة';
+  $('#platformId').value = p.id;
+  $('#platformName').value = p.name;
+  $('#platformColor').value = p.color || '#0f766e';
+  $('#platformFields').innerHTML = '';
+  (p.fields||[]).forEach(f => addPlatformField(f.name, f.key, f.id));
+  $('#platformMsg').innerHTML = '';
+  const myCls = myClasses();
+  $('#platformClass').innerHTML = `<option value="">اختر الصف</option>${myCls.map(cid => {
+    const c = DATA.classes.find(x=>x.id===cid);
+    return c ? `<option value="${c.id}" ${c.id===p.classId?'selected':''}>${esc(c.name)}</option>` : '';
+  }).join('')}`;
+  onPlatformClassChange(p.sectionId);
+  const mySubs = mySubjects();
+  $('#platformSubject').innerHTML = `<option value="">بدون مادة</option>${mySubs.map(sid => {
+    const s = DATA.subjects.find(x=>x.id===sid);
+    return s ? `<option value="${s.id}" ${s.id===p.subjectId?'selected':''}>${esc(s.name)}</option>` : '';
+  }).join('')}`;
+  openModal('mPlatform');
+};
+window.onPlatformClassChange = function(preselect){
+  const cid = $('#platformClass').value;
+  if (!cid) { $('#platformSection').innerHTML = '<option value="">كل الفصول</option>'; return; }
+  const mySecs = mySections();
+  const secs = DATA.sections.filter(s=>s.classId===cid && mySecs.includes(s.id));
+  const sel = typeof preselect === 'string' ? preselect : $('#platformSection').value;
+  $('#platformSection').innerHTML = `<option value="">كل الفصول</option>${secs.map(s=>`<option value="${s.id}" ${s.id===sel?'selected':''}>${esc(s.name)}</option>`).join('')}`;
+};
+window.addPlatformField = function(name='', key='', id=''){
+  const container = $('#platformFields'); if (!container) return;
+  const fid = id || uid('f_');
+  const row = document.createElement('div');
+  row.className = 'field-dyn'; row.dataset.fid = fid;
+  row.innerHTML = `<input class="input pf-name" placeholder="اسم الحقل" value="${esc(name)}" /><input class="input pf-key" placeholder="المفتاح" value="${esc(key)}" style="max-width:120px" /><button type="button" class="btn btn-danger btn-xs" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>`;
+  container.appendChild(row);
+};
+window.savePlatform = async function(ev){
+  ev.preventDefault();
+  const id = $('#platformId').value;
+  const name = $('#platformName').value.trim();
+  const color = $('#platformColor').value;
+  const classId = $('#platformClass').value;
+  const sectionId = $('#platformSection').value || null;
+  const subjectId = $('#platformSubject').value || null;
+  const msg = $('#platformMsg');
+  if (!name) { msg.innerHTML = '<div class="alert alert-error">اسم المنصة مطلوب.</div>'; return false; }
+  if (!classId) { msg.innerHTML = '<div class="alert alert-error">اختر الصف.</div>'; return false; }
+  const fields = [];
+  $$('#platformFields .field-dyn').forEach(row => {
+    const fName = row.querySelector('.pf-name').value.trim();
+    const fKey = row.querySelector('.pf-key').value.trim();
+    const fid = row.dataset.fid;
+    if (fName) fields.push({ id: fid, name: fName, key: fKey || fid });
+  });
+  if (fields.length === 0) { msg.innerHTML = '<div class="alert alert-error">أضف حقلاً واحداً على الأقل.</div>'; return false; }
+  if (id) {
+    const p = DATA.platforms.find(x=>x.id===id);
+    if (!p || !canEditPlatform(p)) { msg.innerHTML = '<div class="alert alert-error">غير مصرح.</div>'; return false; }
+    p.name = name; p.color = color; p.fields = fields; p.classId = classId; p.sectionId = sectionId; p.subjectId = subjectId;
+  } else {
+    DATA.platforms.push({
+      id: uid('pl_'), name, color, fields,
+      classId, sectionId, subjectId,
+      createdBy: me.id, createdByRole: 'teacher',
+      createdAt: nowIso()
+    });
+  }
+  if (!await saveData()) { msg.innerHTML = '<div class="alert alert-error">فشل الحفظ.</div>'; return false; }
+  toast('✅ تم حفظ المنصة', 'success'); closeModal('mPlatform'); render(); return false;
+};
+window.deletePlatform = function(id){
+  const p = DATA.platforms.find(x=>x.id===id); if (!p || !canEditPlatform(p)) return toast('غير مصرح', 'error');
+  askConfirm(`حذف منصة "${p.name}" وكل بياناتها؟`, async () => {
+    DATA.platforms = DATA.platforms.filter(x=>x.id!==id);
+    DATA.studentPlatforms = DATA.studentPlatforms.filter(x=>x.platformId!==id);
+    await saveData(); toast('تم الحذف', 'success'); render();
+  });
+};
+window.viewPlatformStudents = function(platformId){
+  const p = DATA.platforms.find(x=>x.id===platformId); if (!p) return;
+  const mySt = myStudents();
+  const entries = DATA.studentPlatforms.filter(sp => sp.platformId === platformId && mySt.some(s=>s.id===sp.studentId));
+  $('#platformStudentsTitle').textContent = `بيانات ${p.name} (${entries.length})`;
+  $('#platformStudentsBody').innerHTML = `
+    <div style="margin-bottom:12px">
+      <button class="btn btn-primary btn-sm" onclick="window.openStudentPlatformAdd('${platformId}')"><i class="fas fa-plus"></i> إضافة بيانات لطالب</button>
+    </div>
+    ${entries.length === 0 ? '<div class="empty">لا بيانات</div>' : `
+    <div class="table-wrap"><table>
+      <thead><tr><th>الطالب</th><th>البيانات</th><th>إجراء</th></tr></thead>
+      <tbody>${entries.map(sp => {
+        const st = DATA.students.find(s=>s.id===sp.studentId);
+        if (!st) return '';
+        const fields = (p.fields||[]).map(f => `${esc(f.name)}: <code>${esc(sp.values[f.id]||'—')}</code>`).join(' • ');
+        return `<tr><td>${esc(st.name)}</td><td style="font-size:12px">${fields}</td>
+          <td><div class="actions">
+            <button class="btn btn-warn btn-xs" onclick="window.editStudentPlatform('${sp.id}')"><i class="fas fa-edit"></i></button>
+            <button class="btn btn-danger btn-xs" onclick="window.deleteStudentPlatform('${sp.id}')"><i class="fas fa-trash"></i></button>
+          </div></td></tr>`;
+      }).join('')}</tbody>
+    </table></div>`}`;
+  openModal('mPlatformStudents');
+};
+window.openStudentPlatformAdd = function(platformId){
+  const p = DATA.platforms.find(x=>x.id===platformId); if (!p) return;
+  $('#spModalTitle').textContent = `إضافة بيانات ${p.name}`;
+  $('#spId').value = '';
+  $('#spPlatformId').value = platformId;
+  // Students in this platform's scope
+  const scopedStudents = DATA.students.filter(s => {
+    if (p.sectionId && s.sectionId !== p.sectionId) return false;
+    if (!p.sectionId && p.classId && s.classId !== p.classId) return false;
+    if (me.role !== 'admin' && !mySections().includes(s.sectionId)) return false;
+    return true;
+  });
+  $('#spStudentSelect').innerHTML = `<option value="">اختر</option>${scopedStudents.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('')}`;
+  $('#spStudentSelect').disabled = false;
+  $('#spFieldsBox').innerHTML = (p.fields||[]).map(f => `<div class="field"><label>${esc(f.name)}</label><input class="input sp-field" data-fid="${f.id}" placeholder="${esc(f.name)}" /></div>`).join('');
+  openModal('mStudentPlatform');
+};
+window.editStudentPlatform = function(id){
+  const sp = DATA.studentPlatforms.find(x=>x.id===id); if (!sp) return;
+  const p = DATA.platforms.find(x=>x.id===sp.platformId); if (!p) return;
+  const st = DATA.students.find(s=>s.id===sp.studentId);
+  $('#spModalTitle').textContent = `تعديل بيانات ${st?.name||''}`;
+  $('#spId').value = id;
+  $('#spPlatformId').value = sp.platformId;
+  $('#spStudentSelect').innerHTML = `<option value="${sp.studentId}" selected>${esc(st?.name||'')}</option>`;
+  $('#spStudentSelect').disabled = true;
+  $('#spFieldsBox').innerHTML = (p.fields||[]).map(f => `<div class="field"><label>${esc(f.name)}</label><input class="input sp-field" data-fid="${f.id}" value="${esc(sp.values[f.id]||'')}" /></div>`).join('');
+  openModal('mStudentPlatform');
+};
+window.saveStudentPlatform = async function(ev){
+  ev.preventDefault();
+  const id = $('#spId').value;
+  const platformId = $('#spPlatformId').value;
+  const studentId = $('#spStudentSelect').value;
+  if (!studentId) return toast('اختر طالباً', 'warning'), false;
+  const values = {};
+  $$('#spFieldsBox .sp-field').forEach(inp => { values[inp.dataset.fid] = inp.value.trim(); });
+  if (id) {
+    const sp = DATA.studentPlatforms.find(x=>x.id===id);
+    if (sp) sp.values = values;
+  } else {
+    if (DATA.studentPlatforms.some(sp => sp.platformId === platformId && sp.studentId === studentId)) return toast('مسجل بالفعل', 'warning'), false;
+    DATA.studentPlatforms.push({ id: uid('sp_'), platformId, studentId, values, createdAt: nowIso() });
+  }
+  await saveData(); toast('✅', 'success'); closeModal('mStudentPlatform'); render();
+  return false;
+};
+window.deleteStudentPlatform = function(id){
+  askConfirm('حذف البيانات؟', async () => {
+    DATA.studentPlatforms = DATA.studentPlatforms.filter(x=>x.id!==id);
+    await saveData(); render();
+  });
+};
 
 /* ============ TIMETABLES ============ */
 const DAYS = ['السبت','الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'];
@@ -1200,9 +1632,7 @@ function renderTimetableHTML(tt){
         const subj = DATA.subjects.find(s=>s.id===e.subjectId);
         const teacher = DATA.users.find(u=>u.id===e.teacherId);
         html += `<td><div class="subject">${esc(subj?.name||'—')}</div><div class="teacher">${esc(teacher?.name||'—')}</div><div class="time">${esc(e.from||'')} - ${esc(e.to||'')}</div></td>`;
-      } else {
-        html += `<td class="empty-cell">—</td>`;
-      }
+      } else html += `<td class="empty-cell">—</td>`;
     });
     html += '</tr>';
   });
@@ -1224,8 +1654,6 @@ function viewAttendance(){
       <div class="toolbar">
         <button class="btn btn-primary" onclick="window.startScan()"><i class="fas fa-barcode"></i> مسح</button>
         <button class="btn btn-success" onclick="window.exportAttendance('csv')"><i class="fas fa-file-csv"></i> CSV</button>
-        <button class="btn btn-secondary" onclick="window.exportAttendance('json')"><i class="fas fa-file-code"></i> JSON</button>
-        <button class="btn btn-danger" onclick="window.deleteAttendanceDay()"><i class="fas fa-trash"></i> حذف اليوم</button>
         <input class="input" type="date" value="${attDate}" onchange="window.setAttDate(this.value)" style="flex:0 0 auto" />
         <div class="search-wrap"><i class="fas fa-search"></i><input class="input" placeholder="ابحث..." value="${esc(attQ)}" oninput="window.debounceSet('attQ', this.value)" /></div>
         <select class="input" onchange="window.setAttFilter('attSF', this.value)"><option value="">كل فصولي</option>${mySecs.map(s=>`<option value="${s.id}" ${attSF===s.id?'selected':''}>${esc(s.name)}</option>`).join('')}</select>
@@ -1249,28 +1677,19 @@ function viewAttendance(){
 window.setAttDate = v => { attDate = v; render(); };
 window.setAttFilter = (key, v) => { if (key==='attSF') attSF = v; else if (key==='attStat') attStat = v; render(); };
 window.deleteAttendanceRecord = function(id){
-  askConfirm('حذف السجل؟', async () => { DATA.attendance = DATA.attendance.filter(a => a.id !== id); await saveData(); render(); });
-};
-window.deleteAttendanceDay = function(){
-  const myStIds = new Set(myStudents().map(s=>s.id));
-  askConfirm(`حذف كل سجلات ${attDate}؟`, async () => {
-    DATA.attendance = DATA.attendance.filter(a => !(a.date === attDate && myStIds.has(a.targetId)));
-    await saveData(); render();
-  });
+  askConfirm('حذف؟', async () => { DATA.attendance = DATA.attendance.filter(a => a.id !== id); await saveData(); render(); });
 };
 window.exportAttendance = function(fmt){
   const myStIds = new Set(myStudents().map(s=>s.id));
   const list = DATA.attendance.filter(a => a.targetType==='student' && myStIds.has(a.targetId));
   if (fmt === 'csv') {
-    let csv = '\uFEFF' + 'الاسم,الفصل,التاريخ,الحالة,ملاحظة\n';
+    let csv = '\uFEFF' + 'الاسم,الفصل,التاريخ,الحالة\n';
     list.forEach(a => {
       const st = DATA.students.find(s=>s.id===a.targetId);
       const sec = DATA.sections.find(s=>s.id===st?.sectionId);
-      csv += `"${st?.name||''}","${sec?.name||''}","${a.date}","${a.status}","${(a.note||'').replace(/"/g,'""')}"\n`;
+      csv += `"${st?.name||''}","${sec?.name||''}","${a.date}","${a.status}"\n`;
     });
     downloadBlob(new Blob([csv], {type:'text/csv;charset=utf-8'}), `attendance-${today()}.csv`);
-  } else {
-    downloadBlob(new Blob([JSON.stringify(list, null, 2)], {type:'application/json'}), `attendance-${today()}.json`);
   }
   toast('تم التصدير', 'success');
 };
@@ -1281,83 +1700,91 @@ function downloadBlob(blob, name){
   setTimeout(()=>URL.revokeObjectURL(url), 1500);
 }
 
-/* ============ GRADES (organized by exam/assessment name) ============ */
+/* ============ GRADES (sheets) ============ */
 function viewGrades(){
-  // تجميع الدرجات حسب اسم الاختبار/التقييم
   const mySt = myStudents();
   const myStIds = new Set(mySt.map(s=>s.id));
   const myGrades = DATA.grades.filter(g => myStIds.has(g.studentId));
-  
-  // Group by examName
   const groups = {};
   myGrades.forEach(g => {
     const key = g.examName || g.kind || 'غير محدد';
-    if (!groups[key]) groups[key] = { name: key, kind: g.kind, subjectId: g.subjectId, grades: [], total: 0, max: 0 };
+    if (!groups[key]) groups[key] = { name: key, kind: g.kind, subjectId: g.subjectId, grades: [] };
     groups[key].grades.push(g);
   });
-  
   const sheets = Object.values(groups);
-  
   return `
     <div class="container">
       <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
-        <button class="btn btn-primary" onclick="window.openGradeSheetAdd()"><i class="fas fa-plus"></i> إنشاء كشف درجات جديد</button>
+        <button class="btn btn-primary" onclick="window.openNewSheetModal()"><i class="fas fa-plus"></i> إنشاء كشف جديد</button>
       </div>
       <div class="card" style="margin-bottom:14px">
         <div class="card-head"><h3><i class="fas fa-star"></i> كشوف الدرجات (${sheets.length})</h3></div>
-        <p style="color:var(--text-3);font-size:12.5px">كل كشف يمثل اختباراً/تقييماً. اضغط على الكشف لعرض/إضافة/تعديل/حذف درجات الطلاب.</p>
+        <p style="color:var(--text-3);font-size:12.5px">اضغط على الكشف لعرض/إضافة/تعديل/حذف درجات الطلاب.</p>
       </div>
-      ${sheets.length === 0 ? '<div class="card empty"><i class="fas fa-star"></i><div>لا توجد كشوف درجات بعد</div></div>' : `
+      ${sheets.length === 0 ? '<div class="card empty"><i class="fas fa-star"></i><div>لا كشوف بعد</div></div>' : `
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px">
         ${sheets.map(sheet => {
           const subj = DATA.subjects.find(s=>s.id===sheet.subjectId);
           const avg = sheet.grades.length ? Math.round(sheet.grades.reduce((s,g)=>s + (g.max?(g.score/g.max)*100:0), 0) / sheet.grades.length) : 0;
-          const missing = mySt.length - sheet.grades.length;
           return `<div class="card" style="cursor:pointer" onclick="window.openGradeSheet('${esc(sheet.name)}','${esc(sheet.kind||'')}','${esc(sheet.subjectId||'')}')">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
               <div>
                 <h4 style="margin:0;font-size:14.5px">${esc(sheet.name)}</h4>
-                <div style="font-size:11.5px;color:var(--text-3);margin-top:2px">
-                  ${esc(sheet.kind)} · ${esc(subj?.name||'بدون مادة')}
-                </div>
+                <div style="font-size:11.5px;color:var(--text-3);margin-top:2px">${esc(sheet.kind)} · ${esc(subj?.name||'')}</div>
               </div>
               <span class="badge badge-info">${sheet.grades.length} طالب</span>
             </div>
             <div style="display:flex;justify-content:space-between;font-size:12px">
               <span style="color:var(--text-3)">متوسط: <strong style="color:var(--${avg>=50?'ok':'bad'})">${avg}%</strong></span>
-              ${missing > 0 ? `<span class="badge badge-warn">${missing} بدون درجة</span>` : '<span class="badge badge-ok">مكتمل</span>'}
             </div>
           </div>`;
         }).join('')}
       </div>`}
     </div>`;
 }
-
+window.openNewSheetModal = function(){
+  $('#sheetName').value = '';
+  $('#sheetKind').value = 'امتحان شهري';
+  const mySubs = mySubjects();
+  $('#sheetSubject').innerHTML = mySubs.map(sid => {
+    const s = DATA.subjects.find(x=>x.id===sid);
+    return s ? `<option value="${s.id}">${esc(s.name)}</option>` : '';
+  }).join('');
+  openModal('mNewSheet');
+};
+window.createGradeSheet = function(ev){
+  ev.preventDefault();
+  const name = $('#sheetName').value.trim();
+  const kind = $('#sheetKind').value;
+  const subjectId = $('#sheetSubject').value;
+  if (!name || !subjectId) return toast('أكمل', 'warning'), false;
+  closeModal('mNewSheet');
+  openGradeSheet(name, kind, subjectId);
+  return false;
+};
 window.openGradeSheet = function(examName, kind, subjectId){
+  currentSheetInfo = { name: examName, kind, subjectId };
   const mySt = myStudents();
-  const myStIds = new Set(mySt.map(s=>s.id));
-  const entries = DATA.grades.filter(g => 
-    myStIds.has(g.studentId) && 
-    (g.examName === examName || (!g.examName && g.kind === kind))
-  );
+  const entries = DATA.grades.filter(g => g.examName === examName && mySt.some(s=>s.id===g.studentId));
+  const subj = DATA.subjects.find(s=>s.id===subjectId);
+  const eligible = subj ? mySt.filter(s=>s.classId===subj.classId) : mySt;
   
   $('#gradesModalTitle').textContent = examName;
-  let html = `
+  $('#gradesBody').innerHTML = `
     <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
-      <button class="btn btn-primary btn-sm" onclick="window.openGradeEdit('${esc(examName)}','${esc(kind)}','${esc(subjectId)}','')"><i class="fas fa-plus"></i> إضافة/تعديل درجة لطالب</button>
-      <button class="btn btn-secondary btn-sm" onclick="window.exportGradesSheet('${esc(examName)}')"><i class="fas fa-file-csv"></i> تصدير الكشف</button>
+      <button class="btn btn-primary btn-sm" onclick="window.openGradeEdit('${esc(examName)}','${esc(kind)}','${esc(subjectId)}','')"><i class="fas fa-plus"></i> إضافة/تعديل درجة</button>
     </div>
     <div class="table-wrap"><table>
       <thead><tr><th>الطالب</th><th>الدرجة</th><th>النسبة</th><th>ملاحظة</th><th>إجراء</th></tr></thead>
-      <tbody>${mySt.map(st => {
+      <tbody>${eligible.map(st => {
         const g = entries.find(x => x.studentId === st.id);
         if (!g) {
           return `<tr>
             <td>${esc(st.name)}</td>
-            <td><span class="badge badge-warn">بدون درجة</span></td>
+            <td><span class="badge badge-warn">بدون</span></td>
             <td>—</td>
             <td>—</td>
-            <td><button class="btn btn-success btn-xs" onclick="window.openGradeEdit('${esc(examName)}','${esc(kind)}','${esc(subjectId)}','${st.id}')"><i class="fas fa-plus"></i> إضافة</button></td>
+            <td><button class="btn btn-success btn-xs" onclick="window.openGradeEdit('${esc(examName)}','${esc(kind)}','${esc(subjectId)}','${st.id}')"><i class="fas fa-plus"></i></button></td>
           </tr>`;
         }
         const pct = g.max ? Math.round((g.score/g.max)*100) : 0;
@@ -1373,23 +1800,8 @@ window.openGradeSheet = function(examName, kind, subjectId){
         </tr>`;
       }).join('')}</tbody>
     </table></div>`;
-  $('#gradesBody').innerHTML = html;
   openModal('mGrades');
 };
-
-window.openGradeSheetAdd = function(){
-  // Simple: open grade edit form for new sheet, requires typing name
-  const name = prompt('اسم الكشف (مثل: امتحان الشهر الأول، تقييم أسبوعي 1):');
-  if (!name) return;
-  const kind = prompt('النوع (تقييم أسبوعي/امتحان شهري/امتحان نهائي/واجب):', 'امتحان شهري');
-  if (!kind) return;
-  const mySubjects = DATA.subjects.filter(s => mySubjects_()?.includes(s.id) || myStudents().some(st=>st.classId===s.classId));
-  const subj = mySubjects[0];
-  if (!subj) { toast('لا مواد', 'error'); return; }
-  openGradeEdit(name, kind, subj.id, '');
-};
-function mySubjects_(){ return me?.subjectIds || []; }
-
 window.openGradeEdit = function(examName, kind, subjectId, studentId, gradeId){
   $('#gradeEditTitle').textContent = gradeId ? 'تعديل درجة' : 'إضافة درجة';
   $('#gradeId').value = gradeId || '';
@@ -1397,15 +1809,17 @@ window.openGradeEdit = function(examName, kind, subjectId, studentId, gradeId){
   $('#gradeKind').value = kind;
   const mySt = myStudents();
   $('#gradeStudent').innerHTML = mySt.map(s=>`<option value="${s.id}" ${s.id===studentId?'selected':''}>${esc(s.name)}</option>`).join('');
-  const mySubs = DATA.subjects.filter(s => mySubjects_().includes(s.id) || mySt.some(st=>st.classId===s.classId));
-  $('#gradeSubject').innerHTML = mySubs.map(s=>`<option value="${s.id}" ${s.id===subjectId?'selected':''}>${esc(s.name)}</option>`).join('');
+  const mySubs = mySubjects();
+  $('#gradeSubject').innerHTML = mySubs.map(sid => {
+    const s = DATA.subjects.find(x=>x.id===sid);
+    return s ? `<option value="${s.id}" ${s.id===subjectId?'selected':''}>${esc(s.name)}</option>` : '';
+  }).join('');
   if (gradeId) {
     const g = DATA.grades.find(x=>x.id===gradeId);
     if (g) { $('#gradeScore').value = g.score; $('#gradeMax').value = g.max; $('#gradeNote').value = g.note || ''; }
   } else { $('#gradeScore').value = ''; $('#gradeMax').value = '100'; $('#gradeNote').value = ''; }
   openModal('mGradeEdit');
 };
-
 window.saveGrade = async function(ev){
   ev.preventDefault();
   const id = $('#gradeId').value;
@@ -1419,43 +1833,24 @@ window.saveGrade = async function(ev){
   if (!studentId || !subjectId || !max) return toast('أكمل', 'warning'), false;
   if (id) {
     const g = DATA.grades.find(x=>x.id===id);
-    if (g) { g.score = score; g.max = max; g.note = note; g.studentId = studentId; g.subjectId = subjectId; }
+    if (g) { g.score = score; g.max = max; g.note = note; }
   } else {
-    // Check for existing grade for same student+examName
     const existing = DATA.grades.find(g => g.studentId === studentId && g.examName === examName);
     if (existing) { existing.score = score; existing.max = max; existing.note = note; }
     else DATA.grades.push({ id: uid('g_'), examName, kind, studentId, subjectId, score, max, note, date: today(), by: me.id });
   }
-  await saveData(); toast('تم الحفظ', 'success'); closeModal('mGradeEdit');
-  // Re-open the sheet
-  const mySt = DATA.students.find(s=>s.id===studentId);
-  const subj = DATA.subjects.find(s=>s.id===subjectId);
-  if (subj) openGradeSheet(examName, kind, subj.id);
+  await saveData(); toast('✅', 'success'); closeModal('mGradeEdit');
+  if (currentSheetInfo) openGradeSheet(currentSheetInfo.name, currentSheetInfo.kind, currentSheetInfo.subjectId);
   render();
   return false;
 };
-
 window.deleteGradeById = function(id, examName, kind, subjectId){
   askConfirm('حذف الدرجة؟', async () => {
     DATA.grades = DATA.grades.filter(g => g.id !== id);
-    await saveData(); toast('تم الحذف', 'success');
-    if (subjectId) openGradeSheet(examName, kind, subjectId);
+    await saveData(); toast('✅', 'success');
+    openGradeSheet(examName, kind, subjectId);
     render();
   });
-};
-
-window.exportGradesSheet = function(examName){
-  const mySt = myStudents();
-  const myStIds = new Set(mySt.map(s=>s.id));
-  const entries = DATA.grades.filter(g => myStIds.has(g.studentId) && g.examName === examName);
-  let csv = '\uFEFF' + 'الطالب,الدرجة,من,النسبة,ملاحظة\n';
-  mySt.forEach(st => {
-    const g = entries.find(x=>x.studentId===st.id);
-    const pct = g ? Math.round((g.score/g.max)*100) : 0;
-    csv += `"${st.name}","${g?.score||''}","${g?.max||''}","${g?pct+'%':''}","${(g?.note||'').replace(/"/g,'""')}"\n`;
-  });
-  downloadBlob(new Blob([csv], {type:'text/csv;charset=utf-8'}), `sheet-${examName.replace(/\s+/g,'_')}-${today()}.csv`);
-  toast('تم التصدير', 'success');
 };
 
 /* ============ EXAMS ============ */
@@ -1492,7 +1887,7 @@ window.viewExamResults = function(examId){
   const ex = DATA.exams.find(e=>e.id===examId); if (!ex) return;
   const results = DATA.examResults.filter(r=>r.examId===examId && r.status==='completed');
   $('#resultBody').innerHTML = `
-    <h4 style="margin-bottom:8px">${esc(ex.name)} <span style="color:var(--text-3)">(${results.length} مشاركة)</span></h4>
+    <h4 style="margin-bottom:8px">${esc(ex.name)} (${results.length} مشاركة)</h4>
     ${results.length===0 ? '<div class="empty">لا نتائج</div>' : `
     <div class="table-wrap"><table>
       <thead><tr><th>الطالب</th><th>الدرجة</th><th>النسبة</th><th>المحاولة</th></tr></thead>
@@ -1631,9 +2026,8 @@ window.saveExam = async function(ev){
       correct = [...card.querySelectorAll('.q-opt input[type=radio]:checked, .q-opt input[type=checkbox]:checked')].map(r=>r.value.trim()).filter(Boolean).join(',');
     } else { modelAnswer = card.querySelector('.q-model').value.trim(); }
     if (!text) { valid = false; toast(`سؤال ${i+1}: النص مطلوب`, 'warning'); return; }
-    if ((type==='single'||type==='multiple') && options.length < 2) { valid = false; toast(`سؤال ${i+1}: خياران على الأقل`, 'warning'); return; }
-    if ((type==='single'||type==='truefalse') && !correct) { valid = false; toast(`سؤال ${i+1}: حدد الإجابة`, 'warning'); return; }
-    if (type==='single' && correct.split(',').length > 1) { valid = false; toast(`سؤال ${i+1}: اختيار واحد فقط`, 'warning'); return; }
+    if ((type==='single'||type==='multiple') && options.length < 2) { valid = false; toast(`سؤال ${i+1}: خياران`, 'warning'); return; }
+    if ((type==='single'||type==='truefalse') && !correct) { valid = false; toast(`سؤال ${i+1}: الإجابة`, 'warning'); return; }
     questions.push({ id: qid, text, type, points, options, correct, modelAnswer });
   });
   if (!valid) return false;
@@ -1650,48 +2044,41 @@ window.saveExam = async function(ev){
   };
   if (id) { const ex = DATA.exams.find(e=>e.id===id); if (ex) Object.assign(ex, data); }
   else DATA.exams.push({ id: uid('ex_'), code: genCode(8), ...data, createdAt: nowIso() });
-  await saveData(); toast('تم الحفظ', 'success'); closeModal('mExam'); render(); return false;
+  await saveData(); toast('✅', 'success'); closeModal('mExam'); render(); return false;
 };
 window.deleteExam = function(id){
-  askConfirm('حذف الاختبار ونتائجه؟', async () => {
+  askConfirm('حذف الاختبار؟', async () => {
     DATA.exams = DATA.exams.filter(e=>e.id!==id);
     DATA.examResults = DATA.examResults.filter(r=>r.examId!==id);
     await saveData(); render();
   });
 };
 
-/* ============ TAKE EXAM (student) ============ */
+/* ============ TAKE EXAM ============ */
 window.startTakeExam = function(examId, childId){
   const ex = DATA.exams.find(e=>e.id===examId);
   const st = DATA.students.find(s=>s.id===childId);
   if (!ex || !st) return;
-  if (ex.status !== 'active') return toast('الاختبار غير نشط', 'warning');
-  // check attempts
+  if (ex.status !== 'active') return toast('غير نشط', 'warning');
   const pastResults = DATA.examResults.filter(r => r.examId === examId && r.studentId === childId && r.status === 'completed');
   if (pastResults.length >= ex.attempts) return toast('استنفدت المحاولات', 'warning');
-  // Check for existing in-progress
   let result = DATA.examResults.find(r => r.examId === examId && r.studentId === childId && r.status === 'in-progress');
   if (!result) {
     result = { id: uid('r_'), examId, studentId: childId, startedAt: nowIso(), status: 'in-progress', answers: {}, score: 0, max: ex.totalPoints, attempt: pastResults.length + 1 };
-    DATA.examResults.push(result);
-    saveData();
+    DATA.examResults.push(result); saveData();
   }
   currentTakeExam = { exam: ex, student: st, result };
   renderTakeExam();
 };
-
 function renderTakeExam(){
   if (!currentTakeExam) return;
   const { exam, student, result } = currentTakeExam;
   const shuffledQuestions = exam.shuffle ? shuffleArr(exam.questions) : exam.questions;
-  
   $('#takeExamTitle').textContent = exam.name + ' — ' + student.name;
-  let html = `
-    <div class="timer" id="examTimer">⏱️ جارِ الحساب...</div>
+  let html = `<div class="timer" id="examTimer">⏱️ جارِ الحساب...</div>
     <div style="font-size:12.5px;color:var(--text-3);margin-bottom:12px">
       <div>المحاولة ${result.attempt} من ${exam.attempts} · الدرجة الكلية: ${exam.totalPoints}</div>
-    </div>
-  `;
+    </div>`;
   shuffledQuestions.forEach((q, idx) => {
     const savedAns = result.answers[q.id] || '';
     html += `<div class="question-card">
@@ -1719,26 +2106,22 @@ function renderTakeExam(){
     }
     html += `</div>`;
   });
-  html += `
-    <div style="display:flex;gap:8px;margin-top:16px">
-      <button class="btn btn-primary" onclick="window.submitTakeExam()"><i class="fas fa-paper-plane"></i> تسليم الاختبار</button>
-      <button class="btn btn-secondary" onclick="window.closeTakeExam()">إغلاق</button>
-    </div>`;
+  html += `<div style="display:flex;gap:8px;margin-top:16px">
+    <button class="btn btn-primary" onclick="window.submitTakeExam()"><i class="fas fa-paper-plane"></i> تسليم</button>
+    <button class="btn btn-secondary" onclick="window.closeTakeExam()">إغلاق</button>
+  </div>`;
   $('#takeExamBody').innerHTML = html;
   openModal('mTakeExam');
-  
-  // Timer
   if (examTimer) clearInterval(examTimer);
   const startTime = new Date(result.startedAt).getTime();
   const endTime = startTime + exam.duration * 60000;
   examTimer = setInterval(() => {
-    const now = Date.now();
-    const left = Math.max(0, Math.floor((endTime - now) / 1000));
+    const left = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
     const timerEl = $('#examTimer');
     if (!timerEl) { clearInterval(examTimer); return; }
     if (left <= 0) {
       clearInterval(examTimer);
-      timerEl.textContent = '⏰ انتهى الوقت — سيتم التسليم تلقائياً';
+      timerEl.textContent = '⏰ انتهى الوقت';
       setTimeout(() => window.submitTakeExam(true), 1500);
       return;
     }
@@ -1747,7 +2130,6 @@ function renderTakeExam(){
     if (left < 60) timerEl.style.background = 'var(--bad)';
   }, 1000);
 }
-
 window.saveAnswer = function(qId, value){
   if (!currentTakeExam) return;
   currentTakeExam.result.answers[qId] = value;
@@ -1762,13 +2144,11 @@ window.toggleMultiAnswer = function(qId, opt, checked){
   currentTakeExam.result.answers[qId] = arr.join(',');
   saveData();
 };
-
 window.submitTakeExam = async function(auto = false){
   if (!currentTakeExam) return;
   if (examTimer) clearInterval(examTimer);
   const { exam, student, result } = currentTakeExam;
-  if (!auto && !confirm('هل أنت متأكد من تسليم الاختبار؟')) return;
-  // Calculate score
+  if (!auto && !confirm('تسليم الاختبار؟')) return;
   let score = 0;
   exam.questions.forEach(q => {
     const ans = result.answers[q.id] || '';
@@ -1789,10 +2169,9 @@ window.submitTakeExam = async function(auto = false){
   closeModal('mTakeExam');
   currentTakeExam = null;
   if (examTimer) { clearInterval(examTimer); examTimer = null; }
-  toast(`✅ تم التسليم — درجتك: ${score}/${exam.totalPoints}`, 'success');
+  toast(`✅ تم — درجتك: ${score}/${exam.totalPoints}`, 'success');
   render();
 };
-
 window.closeTakeExam = function(){
   if (examTimer) { clearInterval(examTimer); examTimer = null; }
   currentTakeExam = null;
@@ -1811,7 +2190,7 @@ function viewLookup(){
           <form class="form" onsubmit="return window.doLookup(event)">
             <div class="field"><label>كود الطالب</label><input class="input" name="code" required maxlength="8" style="text-transform:uppercase;font-family:monospace;letter-spacing:2px;text-align:center;font-size:16px" /></div>
             <button class="btn btn-primary btn-block" type="submit"><i class="fas fa-search"></i> بحث</button>
-            <button type="button" class="btn btn-secondary btn-block" onclick="window.startScan()"><i class="fas fa-barcode"></i> مسح الباركود</button>
+            <button type="button" class="btn btn-secondary btn-block" onclick="window.startScan()"><i class="fas fa-barcode"></i> مسح</button>
           </form>
           <div id="lookupResult" style="margin-top:14px"></div>
         </div>
@@ -1827,24 +2206,21 @@ window.doLookup = function(ev){
   renderStudentFullReport(st, box);
   return false;
 };
-
 function renderStudentFullReport(st, box){
   const cls = DATA.classes.find(c=>c.id===st.classId);
   const sec = DATA.sections.find(s=>s.id===st.sectionId);
   const att = DATA.attendance.filter(a=>a.targetId===st.id && a.targetType==='student').sort((a,b)=>b.date.localeCompare(a.date));
   const grades = DATA.grades.filter(g=>g.studentId===st.id);
   const results = DATA.examResults.filter(r=>r.studentId===st.id && r.status==='completed');
-  // الاختبارات المتاحة للطالب
   const availableExams = DATA.exams.filter(e => {
     if (!e.visible) return false;
     if (e.status !== 'active') return false;
     if (e.classId !== st.classId) return false;
     if (e.sectionId && e.sectionId !== st.sectionId) return false;
-    // Check attempts
     const attemptsDone = results.filter(r => r.examId === e.id).length;
     return attemptsDone < e.attempts;
   });
-  const studentPlatformEntries = DATA.studentPlatforms.filter(sp => sp.studentId === st.id);
+  const studentPlatforms = DATA.studentPlatforms.filter(sp => sp.studentId === st.id);
   const tt = DATA.timetables.find(t => t.sectionId === st.sectionId);
 
   box.innerHTML = `
@@ -1854,8 +2230,6 @@ function renderStudentFullReport(st, box){
       <div style="color:var(--text-3);font-size:13px">${esc(cls?.name||'')} — ${esc(sec?.name||'')}</div>
       <code class="code-pill" style="margin-top:4px">${esc(st.code)}</code>
     </div>
-
-    <!-- الاختبارات المتاحة -->
     ${availableExams.length > 0 ? `<div class="card" style="margin-bottom:12px;padding:14px">
       <h4 style="font-size:14px;margin-bottom:8px"><i class="fas fa-pencil-alt" style="color:var(--primary)"></i> اختبارات متاحة (${availableExams.length})</h4>
       ${availableExams.map(ex => {
@@ -1866,13 +2240,11 @@ function renderStudentFullReport(st, box){
               <strong style="font-size:13.5px">${esc(ex.name)}</strong>
               <div style="font-size:11.5px;color:var(--text-3);margin-top:2px">${esc(subj?.name||'')} · ⏱️ ${ex.duration} د · 📝 ${ex.questions.length} سؤال</div>
             </div>
-            <button class="btn btn-primary btn-sm" onclick="window.startTakeExam('${ex.id}','${st.id}')"><i class="fas fa-play"></i> ابدأ الاختبار</button>
+            <button class="btn btn-primary btn-sm" onclick="window.startTakeExam('${ex.id}','${st.id}')"><i class="fas fa-play"></i> ابدأ</button>
           </div>
         </div>`;
       }).join('')}
     </div>` : ''}
-
-    <!-- نتائج الاختبارات -->
     ${results.length > 0 ? `<div class="card" style="margin-bottom:12px;padding:14px">
       <h4 style="font-size:14px;margin-bottom:8px"><i class="fas fa-chart-bar" style="color:var(--primary)"></i> نتائج الاختبارات (${results.length})</h4>
       ${results.map(r => {
@@ -1885,8 +2257,6 @@ function renderStudentFullReport(st, box){
         </div>`;
       }).join('')}
     </div>` : ''}
-
-    <!-- الدرجات -->
     ${grades.length > 0 ? `<div class="card" style="margin-bottom:12px;padding:14px">
       <h4 style="font-size:14px;margin-bottom:8px"><i class="fas fa-star" style="color:var(--primary)"></i> الدرجات (${grades.length})</h4>
       ${grades.map(g => {
@@ -1897,11 +2267,9 @@ function renderStudentFullReport(st, box){
         </div>`;
       }).join('')}
     </div>` : ''}
-
-    <!-- المنصات -->
-    ${studentPlatformEntries.length > 0 ? `<div class="card" style="margin-bottom:12px;padding:14px">
+    ${studentPlatforms.length > 0 ? `<div class="card" style="margin-bottom:12px;padding:14px">
       <h4 style="font-size:14px;margin-bottom:8px"><i class="fas fa-globe" style="color:var(--primary)"></i> منصاتي</h4>
-      ${studentPlatformEntries.map(sp => {
+      ${studentPlatforms.map(sp => {
         const pl = DATA.platforms.find(p=>p.id===sp.platformId);
         if (!pl) return '';
         return `<div style="background:var(--surface-2);border-radius:8px;padding:10px;margin-bottom:6px">
@@ -1917,14 +2285,10 @@ function renderStudentFullReport(st, box){
         </div>`;
       }).join('')}
     </div>` : ''}
-
-    <!-- الجدول -->
     ${tt && tt.entries && tt.entries.length > 0 ? `<div class="card" style="margin-bottom:12px;padding:14px">
       <h4 style="font-size:14px;margin-bottom:8px"><i class="fas fa-calendar-alt" style="color:var(--primary)"></i> جدول الحصص</h4>
       ${renderTimetableHTML(tt)}
     </div>` : ''}
-
-    <!-- الحضور -->
     <div class="card" style="padding:14px">
       <h4 style="font-size:14px;margin-bottom:8px"><i class="fas fa-clipboard-list" style="color:var(--primary)"></i> سجل الحضور (${att.length})</h4>
       ${att.length ? `<div style="display:flex;flex-wrap:wrap;gap:4px">${att.slice(0,20).map(a=>`<span class="badge ${a.status==='حاضر'?'badge-ok':'badge-bad'}">${esc(a.date)}</span>`).join('')}</div>` : '<div style="color:var(--text-3);font-size:12px">لا سجلات</div>'}
@@ -1932,7 +2296,7 @@ function renderStudentFullReport(st, box){
   `;
 }
 
-/* ============ STUDENT REPORT (internal) ============ */
+/* ============ STUDENT REPORT ============ */
 function viewStudentReport(id){
   const st = DATA.students.find(s=>s.id===id);
   if (!st) return '<div class="container"><div class="alert alert-error">طالب غير موجود</div></div>';
@@ -1942,7 +2306,7 @@ function viewStudentReport(id){
     if (box) renderStudentFullReport(st, box);
   }, 50);
   return `<div class="container">
-    <div class="no-print" style="display:flex;gap:6px;margin-bottom:12px">
+    <div style="display:flex;gap:6px;margin-bottom:12px">
       <button class="btn btn-secondary btn-sm" onclick="window.go('myStudents')"><i class="fas fa-arrow-right"></i> رجوع</button>
       <button class="btn btn-primary btn-sm" onclick="window.print()"><i class="fas fa-print"></i> طباعة</button>
     </div>
@@ -1987,6 +2351,7 @@ function render(){
   }
   app.innerHTML = html;
   if (route === 'auth') authTab('login');
+  if (route === 'analytics') setTimeout(initCharts, 100);
 }
 
 /* ============ INIT ============ */
@@ -2004,7 +2369,7 @@ function render(){
     </div></div></div>`;
     return;
   }
-  if (res.created) toast('✅ تم إنشاء قاعدة البيانات تلقائياً', 'success');
+  if (res.created) toast('✅ تم إنشاء قاعدة البيانات', 'success');
   const saved = loadMe();
   if (saved) {
     const u = DATA.users.find(x=>x.id===saved.id);
@@ -2019,17 +2384,17 @@ function render(){
 })();
 
 Object.assign(window, {
-  go, toggleTheme, openSidebar, closeSidebar,
-  openModal, closeModal,
+  go, toggleTheme, openSidebar, closeSidebar, openModal, closeModal,
   startScan, closeScan, viewBarcode, downloadBarcode, copyText,
   askConfirm, confirmYes, markAttendance,
   openExam, saveExam, addQuestion, changeQType, addOpt, deleteExam, viewExamResults,
-  openAccount, updateAccount,
-  exportAttendance, deleteAttendanceRecord, deleteAttendanceDay,
+  openAccount, updateAccount, exportAttendance, deleteAttendanceRecord,
   openStudentAdd, openStudentEdit, saveStudent, deleteStudent,
-  openGradeSheet, openGradeSheetAdd, openGradeEdit, saveGrade, deleteGradeById, exportGradesSheet,
+  openNewSheetModal, createGradeSheet, openGradeSheet, openGradeEdit, saveGrade, deleteGradeById,
+  openPlatformAdd, openPlatformEdit, onPlatformClassChange, addPlatformField, savePlatform, deletePlatform,
+  viewPlatformStudents, openStudentPlatformAdd, editStudentPlatform, saveStudentPlatform, deleteStudentPlatform,
   startTakeExam, saveAnswer, toggleMultiAnswer, submitTakeExam, closeTakeExam
 });
 </script>
 </body>
-                                                </html>
+  </html>
