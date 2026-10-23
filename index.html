@@ -37,7 +37,6 @@ h1,h2,h3,h4,h5,h6,.page-title,.brand,.hero h1,.auth-title{font-family:var(--font
 button,input,select,textarea{font-family:var(--font-body);font-size:inherit}
 button{cursor:pointer;border:none;background:none}
 a{color:var(--primary);text-decoration:none}
-a:hover{text-decoration:underline}
 
 .app{display:flex;min-height:100vh}
 .sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
@@ -120,6 +119,7 @@ td .actions{display:flex;gap:4px;flex-wrap:wrap}
 .badge-info{background:var(--info-soft);color:var(--info)}
 .badge-primary{background:var(--primary-soft);color:var(--primary)}
 .badge-gold{background:var(--gold-soft);color:var(--gold)}
+.badge-accent{background:var(--accent-soft);color:var(--accent)}
 
 .code-pill{display:inline-block;padding:2px 9px;border-radius:6px;background:var(--surface-2);border:1px solid var(--border);font-family:'Courier New',monospace;font-size:12px;font-weight:700;letter-spacing:.5px}
 
@@ -141,7 +141,7 @@ td .actions{display:flex;gap:4px;flex-wrap:wrap}
 .empty i{font-size:36px;opacity:.4}
 
 .chart{display:flex;align-items:flex-end;gap:8px;height:180px;padding:12px 0 32px;border-bottom:1px solid var(--border);position:relative}
-.chart .bar{flex:1;min-height:4px;background:var(--primary);border-radius:6px 6px 0 0;position:relative;transition:filter var(--tr)}
+.chart .bar{flex:1;min-height:4px;background:var(--primary);border-radius:6px 6px 0 0;position:relative}
 .chart .bar:hover{filter:brightness(1.15)}
 .chart .bar .v{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:700;color:var(--primary)}
 .chart .bar .l{position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--text-3);white-space:nowrap}
@@ -228,6 +228,34 @@ td .actions{display:flex;gap:4px;flex-wrap:wrap}
 .rank-row .bar .fill{height:100%;background:var(--primary)}
 .rank-row .pct{min-width:44px;text-align:left;font-weight:700;font-size:12px;color:var(--primary)}
 
+/* Platform card */
+.platform-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;transition:all var(--tr)}
+.platform-card:hover{border-color:var(--primary-soft);box-shadow:var(--shadow)}
+.platform-card .plat-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.platform-card .plat-logo{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff;flex-shrink:0}
+.platform-card .plat-name{font-weight:700;font-size:14px}
+.platform-card .plat-sub{font-size:11.5px;color:var(--text-3)}
+.platform-card .field-row{display:flex;justify-content:space-between;align-items:center;padding:5px 10px;background:var(--surface-2);border-radius:6px;margin-bottom:4px;font-size:13px}
+.platform-card .field-row .lbl{color:var(--text-3);font-size:12px;font-weight:600}
+.platform-card .field-row .val{font-family:'Courier New',monospace;font-weight:700}
+.platform-card .field-row .val.obscured{filter:blur(4px);cursor:pointer}
+.platform-card .field-row .val.obscured:hover{filter:none}
+
+/* Timetable */
+.tt-table{width:100%;border-collapse:collapse;font-size:13px}
+.tt-table th{background:var(--primary);color:#fff;padding:10px;text-align:center;font-size:12.5px}
+.tt-table td{padding:10px;border:1px solid var(--border);text-align:center;vertical-align:top}
+.tt-table .period{font-weight:700;color:var(--primary)}
+.tt-table .time{font-size:11px;color:var(--text-3);display:block;margin-top:2px}
+.tt-table .subject{font-weight:700;color:var(--text)}
+.tt-table .teacher{font-size:11.5px;color:var(--text-3)}
+.tt-table .empty-cell{color:var(--text-3);font-style:italic;font-size:12px}
+
+/* Subject-chip */
+.chip{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:var(--primary-soft);color:var(--primary);border-radius:20px;font-size:11.5px;font-weight:700}
+.field-dyn{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.field-dyn input{flex:1}
+
 @media(max-width:900px){
   .sidebar{position:fixed;right:0;top:0;height:100vh;z-index:1000;transform:translateX(100%);transition:transform var(--tr);box-shadow:var(--shadow-lg)}
   .sidebar.open{transform:translateX(0)}
@@ -272,7 +300,7 @@ td .actions{display:flex;gap:4px;flex-wrap:wrap}
       <div class="top-actions"><button class="icon-btn menu-btn" onclick="window.openSidebar()"><i class="fas fa-bars"></i></button></div>
     </div>
     <main class="content" id="app">
-      <div style="text-align:center;padding:60px 20px"><i class="fas fa-spinner fa-spin" style="font-size:32px;color:var(--primary)"></i><div style="margin-top:16px;color:var(--text-2)">جارِ الاتصال بقاعدة البيانات...</div></div>
+      <div style="text-align:center;padding:60px 20px"><i class="fas fa-spinner fa-spin" style="font-size:32px;color:var(--primary)"></i><div style="margin-top:16px;color:var(--text-2)">جارِ الاتصال...</div></div>
     </main>
   </div>
 </div>
@@ -351,17 +379,6 @@ td .actions{display:flex;gap:4px;flex-wrap:wrap}
   <div id="resultBody"></div>
 </div></div>
 
-<div class="modal" id="mTakeExam"><div class="box wide">
-  <div class="modal-head">
-    <h3><i class="fas fa-pencil-alt"></i> <span id="takeExamTitle">الاختبار</span></h3>
-    <div style="display:flex;gap:8px;align-items:center">
-      <span id="takeExamTimer" style="color:var(--bad);font-weight:700;font-size:14px;"></span>
-      <button class="close-x" onclick="window.closeTakeExam()"><i class="fas fa-times"></i></button>
-    </div>
-  </div>
-  <div id="takeExamBody"></div>
-</div></div>
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
@@ -372,7 +389,7 @@ const firebaseConfig = {
   projectId: "school-system-manager-91675",
   storageBucket: "school-system-manager-91675.firebasestorage.app",
   messagingSenderId: "337434904928",
-  appId: "1:337434904928:web:a083a8fceff11a2f51f605",
+  appId: "1:137098154880:web:a083a8fceff11a2f51f605",
   measurementId: "G-JNWZ745V4J"
 };
 const fbApp = initializeApp(firebaseConfig);
@@ -388,8 +405,6 @@ let confirmCb = null;
 let scanStream = null, scanDetector = null, scanning = false;
 let saving = false;
 let pollTimer = null;
-let examTimer = null;
-let activeResultId = null;
 
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -398,8 +413,6 @@ const uid = (p='') => p + Date.now().toString(36) + Math.random().toString(36).s
 const today = () => new Date().toISOString().slice(0,10);
 const nowIso = () => new Date().toISOString();
 const normalize = t => (t||'').toString().trim().replace(/[اآإأ]/g,'ا').replace(/[ىئي]/g,'ي').replace(/ؤ/g,'و').replace(/ة/g,'ه').replace(/\s+/g,' ').toLowerCase();
-const isAnswerMatch = (a,b) => normalize(a) === normalize(b);
-const shuffle = a => { const b = [...a]; for (let i = b.length-1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [b[i],b[j]] = [b[j],b[i]]; } return b; };
 
 async function hash(text){
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
@@ -423,52 +436,49 @@ function toast(msg, type='info'){
 function openModal(id){ document.getElementById(id)?.classList.add('open'); }
 function closeModal(id){ document.getElementById(id)?.classList.remove('open'); }
 
-/* ============ SCHEMA ============ */
-const SCHEMA_VERSION = 3;
+/* ============ SCHEMA v4 ============ */
+const SCHEMA_VERSION = 4;
 const DEFAULT_DB = () => ({
   meta: { version: SCHEMA_VERSION, createdAt: nowIso(), lastUpdate: nowIso(), schoolName: 'مدرستي' },
   users: [], classes: [], sections: [], students: [], subjects: [],
-  attendance: [], teacherAttendance: [], grades: [], exams: [], examResults: [], notes: []
+  attendance: [], teacherAttendance: [], grades: [], exams: [], examResults: [], notes: [],
+  platforms: [],            // { id, name, color, fields:[{id,name,key}], createdAt }
+  studentPlatforms: [],     // { id, studentId, platformId, values:{fieldId:value} }
+  timetables: []            // { id, sectionId, classId, entries:[{id, day, period, from, to, subjectId, teacherId, room}] }
 });
 
 function migrate(d){
   if (!d || typeof d !== 'object') d = {};
   if (!d.meta || typeof d.meta !== 'object') d.meta = {};
   if (!d.meta.version) d.meta.version = 1;
-  ['users','classes','sections','students','subjects','attendance','teacherAttendance','grades','exams','examResults','notes']
+  ['users','classes','sections','students','subjects','attendance','teacherAttendance','grades','exams','examResults','notes','platforms','studentPlatforms','timetables']
     .forEach(k => { if (!Array.isArray(d[k])) d[k] = []; });
   d.users = d.users.map(u => ({
-    ...u,
-    role: u.role || 'teacher',
-    isActive: u.isActive === true,
-    rejected: u.rejected === true,
-    code: u.code || '',
-    sectionIds: Array.isArray(u.sectionIds) ? u.sectionIds : [],
-    subjectIds: Array.isArray(u.subjectIds) ? u.subjectIds : [],
-    rank: u.rank || ''
+    ...u, role: u.role || 'teacher', isActive: u.isActive === true, rejected: u.rejected === true,
+    code: u.code || '', sectionIds: Array.isArray(u.sectionIds) ? u.sectionIds : [],
+    subjectIds: Array.isArray(u.subjectIds) ? u.subjectIds : [], rank: u.rank || ''
   }));
   d.exams = d.exams.map(e => ({
     ...e,
     questions: Array.isArray(e.questions) ? e.questions.map(q => ({
-      id: q.id || uid('q_'),
-      text: q.text || '',
-      type: q.type || 'single',
-      points: Number(q.points) || 1,
-      options: Array.isArray(q.options) ? q.options : [],
-      correct: q.correct || '',
-      modelAnswer: q.modelAnswer || ''
+      id: q.id || uid('q_'), text: q.text || '', type: q.type || 'single',
+      points: Number(q.points) || 1, options: Array.isArray(q.options) ? q.options : [],
+      correct: q.correct || '', modelAnswer: q.modelAnswer || ''
     })) : [],
-    totalPoints: Number(e.totalPoints) || 0,
-    status: e.status || 'active',
-    visible: e.visible !== false,
-    shuffle: e.shuffle === true,
-    attempts: Number(e.attempts) || 1,
-    duration: Number(e.duration) || 30,
-    code: e.code || ''
+    totalPoints: Number(e.totalPoints) || 0, status: e.status || 'active',
+    visible: e.visible !== false, shuffle: e.shuffle === true,
+    attempts: Number(e.attempts) || 1, duration: Number(e.duration) || 30, code: e.code || ''
   }));
   d.examResults = d.examResults.map(r => ({
     ...r, answers: r.answers || {}, score: Number(r.score) || 0, max: Number(r.max) || 0,
     attempt: Number(r.attempt) || 1, status: r.status || 'completed'
+  }));
+  d.platforms = d.platforms.map(p => ({
+    ...p, name: p.name || 'منصة', color: p.color || '#0f766e',
+    fields: Array.isArray(p.fields) ? p.fields : []
+  }));
+  d.timetables = d.timetables.map(t => ({
+    ...t, entries: Array.isArray(t.entries) ? t.entries : []
   }));
   d.meta.version = SCHEMA_VERSION;
   return d;
@@ -478,32 +488,27 @@ async function loadData(){
   try {
     const snap = await getDoc(DOC_REF);
     if (snap.exists()) {
-      const raw = snap.data();
-      DATA = migrate(raw.payload || raw);
+      DATA = migrate(snap.data().payload || snap.data());
       try { await setDoc(DOC_REF, { payload: DATA }); } catch(e) {}
       return { ok: true, created: false };
     }
     DATA = migrate(DEFAULT_DB());
     try { await setDoc(DOC_REF, { payload: DATA }); return { ok: true, created: true }; }
     catch(e) {
-      if (e.code === 'permission-denied') return { ok: false, reason: 'permission', message: 'قواعد الأمان تمنع الكتابة. Firebase → Firestore → Rules → allow read, write: if true;' };
-      return { ok: false, reason: 'unknown', message: 'خطأ: ' + (e.message || 'غير معروف') };
+      if (e.code === 'permission-denied') return { ok: false, message: 'قواعد الأمان تمنع الكتابة. Firestore → Rules → allow read, write: if true;' };
+      return { ok: false, message: 'خطأ: ' + (e.message || 'غير معروف') };
     }
   } catch(e) {
-    if (e.code === 'not-found') return { ok: false, reason: 'no-database', message: 'قاعدة Firestore غير موجودة. Firebase Console → Firestore Database → Create database.' };
-    return { ok: false, reason: 'network', message: 'تعذر الاتصال: ' + (e.message || 'تحقق من الإنترنت') };
+    if (e.code === 'not-found') return { ok: false, message: 'قاعدة Firestore غير موجودة.' };
+    return { ok: false, message: 'تعذر الاتصال: ' + (e.message || 'تحقق من الإنترنت') };
   }
 }
 
 async function saveData(){
   if (saving) return false;
   saving = true;
-  try {
-    DATA.meta.lastUpdate = nowIso();
-    await setDoc(DOC_REF, { payload: DATA });
-    return true;
-  } catch(e) {
-    console.error('Save failed:', e.code, e.message);
+  try { DATA.meta.lastUpdate = nowIso(); await setDoc(DOC_REF, { payload: DATA }); return true; }
+  catch(e) {
     if (e.code === 'permission-denied') toast('⛔ صلاحية الكتابة ممنوعة', 'error');
     else toast('فشل الحفظ', 'error');
     return false;
@@ -524,7 +529,6 @@ function startPolling(){
   }, 30000);
 }
 
-/* ============ SESSION ============ */
 function saveMe(u){ localStorage.setItem('me_teacher', JSON.stringify(u)); }
 function loadMe(){ try { return JSON.parse(localStorage.getItem('me_teacher')||'null'); } catch(e){ return null; } }
 function clearMe(){ localStorage.removeItem('me_teacher'); }
@@ -638,7 +642,7 @@ function onScanned(code){
     markAttendance(student.id, 'حاضر'); go('attendance'); return;
   }
   const user = DATA.users.find(u=>u.code===code);
-  if (user) { toast(`تم مسح: ${user.name}`, 'info'); return; }
+  if (user) { toast(`هذا كود معلم: ${user.name}`, 'info'); return; }
   toast('كود غير معروف', 'error');
 }
 
@@ -663,7 +667,6 @@ window.markAttendance = markAttendance;
 window.askConfirm = function(msg, cb){ $('#confirmMsg').textContent = msg; confirmCb = cb; openModal('mConfirm'); };
 window.confirmYes = function(){ const cb = confirmCb; confirmCb = null; closeModal('mConfirm'); if (cb) cb(); };
 
-/* ============ QUERIES ============ */
 function mySections(){ return me?.sectionIds || []; }
 function mySubjects(){ return me?.subjectIds || []; }
 function myStudents(){
@@ -705,9 +708,10 @@ function renderSidebar(){
       <div class="grp">الطلاب</div>
       <a class="${route==='myStudents'?'active':''}" onclick="window.go('myStudents')"><i class="fas fa-user-graduate"></i> طلابي</a>
       <a class="${route==='lookup'?'active':''}" onclick="window.go('lookup')"><i class="fas fa-search"></i> استعلام طالب</a>
+      <a class="${route==='platforms'?'active':''}" onclick="window.go('platforms')"><i class="fas fa-globe"></i> منصات الطلاب</a>
+      <a class="${route==='timetables'?'active':''}" onclick="window.go('timetables')"><i class="fas fa-calendar-alt"></i> جداول الحصص</a>
       <div class="grp">العمليات</div>
       <a class="${route==='attendance'?'active':''}" onclick="window.go('attendance')"><i class="fas fa-clipboard-list"></i> الحضور</a>
-      <a class="${route==='teacherAtt'?'active':''}" onclick="window.go('teacherAtt')"><i class="fas fa-user-check"></i> حضوري</a>
       <a class="${route==='grades'?'active':''}" onclick="window.go('grades')"><i class="fas fa-star"></i> الدرجات</a>
       <a class="${route==='exams'?'active':''}" onclick="window.go('exams')"><i class="fas fa-pencil-alt"></i> الاختبارات</a>
       <div class="grp">الحساب</div>
@@ -727,9 +731,10 @@ function renderTopBar(){
     home:['home','الرئيسية'], auth:['sign-in-alt','تسجيل الدخول'],
     dashboard:['chart-pie','لوحتي'], analytics:['chart-line','التحليلات'],
     leaderboard:['trophy','أفضل الطلاب'], myStudents:['user-graduate','طلابي'],
-    attendance:['clipboard-list','الحضور'], teacherAtt:['user-check','حضوري'],
-    grades:['star','الدرجات'], exams:['pencil-alt','الاختبارات'],
-    lookup:['search','استعلام طالب'], studentReport:['file-alt','تقرير طالب']
+    platforms:['globe','منصات الطلاب'], timetables:['calendar-alt','جداول الحصص'],
+    attendance:['clipboard-list','الحضور'], grades:['star','الدرجات'],
+    exams:['pencil-alt','الاختبارات'], lookup:['search','استعلام طالب'],
+    studentReport:['file-alt','تقرير طالب']
   };
   const [ic, txt] = map[route] || ['home','الرئيسية'];
   $('#pageTitle').innerHTML = `<i class="fas fa-${ic}"></i> <span>${txt}</span>`;
@@ -750,9 +755,9 @@ function viewHome(){
       </div>
       <div class="features">
         <div class="feature"><div class="ico"><i class="fas fa-barcode"></i></div><h4>حضور بالباركود</h4><p>امسح الباركود بالكاميرا أو قارئ USB</p></div>
+        <div class="feature"><div class="ico"><i class="fas fa-globe"></i></div><h4>منصات الطلاب</h4><p>بيانات دخول منصات كيريو وغيرها</p></div>
+        <div class="feature"><div class="ico"><i class="fas fa-calendar-alt"></i></div><h4>جداول الحصص</h4><p>جدول أسبوعي لكل فصل</p></div>
         <div class="feature"><div class="ico"><i class="fas fa-trophy"></i></div><h4>أفضل الطلاب</h4><p>ترتيب تنافسي لكل فصل</p></div>
-        <div class="feature"><div class="ico"><i class="fas fa-pencil-alt"></i></div><h4>اختبارات ذكية</h4><p>صح/خطأ، اختيار، مقالي، أكمل</p></div>
-        <div class="feature"><div class="ico"><i class="fas fa-chart-line"></i></div><h4>تحليلات فورية</h4><p>رسوم بيانية لطلابك</p></div>
       </div>
     </div>`;
 }
@@ -812,13 +817,6 @@ window.doLogin = async function(ev){
   if (u.role === 'admin') { msg.innerHTML = '<div class="alert alert-info"><i class="fas fa-info-circle"></i> أنت أدمن — استخدم adminymo.html.</div>'; return false; }
   me = { id: u.id, name: u.name, username: u.username, role: u.role, sectionIds: u.sectionIds || [], subjectIds: u.subjectIds || [] };
   saveMe(me);
-  // تسجيل حضور المعلم تلقائياً
-  const todayAtt = DATA.teacherAttendance?.find(a => a.userId === u.id && a.date === today());
-  if (!todayAtt) {
-    if (!DATA.teacherAttendance) DATA.teacherAttendance = [];
-    DATA.teacherAttendance.push({ id: uid('ta_'), userId: u.id, date: today(), status: 'حاضر', at: nowIso() });
-    await saveData();
-  }
   toast('تم الدخول', 'success');
   go('dashboard');
   return false;
@@ -842,32 +840,23 @@ window.doRegister = async function(ev){
   return false;
 };
 
-/* ============ ACCOUNT EDIT ============ */
+/* ============ ACCOUNT ============ */
 window.openAccount = function(){
   const u = DATA.users.find(x=>x.id===me.id);
   if (!u) return;
-  $('#accName').value = u.name;
-  $('#accUsername').value = u.username;
-  $('#accOldPass').value = '';
-  $('#accNewPass').value = '';
-  $('#accNewPass2').value = '';
+  $('#accName').value = u.name; $('#accUsername').value = u.username;
+  $('#accOldPass').value = ''; $('#accNewPass').value = ''; $('#accNewPass2').value = '';
   $('#accMsg').innerHTML = '';
   openModal('mAccount');
 };
 window.updateAccount = async function(ev){
   ev.preventDefault();
-  const u = DATA.users.find(x=>x.id===me.id);
-  if (!u) return false;
-  const name = $('#accName').value.trim();
-  const username = $('#accUsername').value.trim();
-  const oldPass = $('#accOldPass').value;
-  const newPass = $('#accNewPass').value;
-  const newPass2 = $('#accNewPass2').value;
+  const u = DATA.users.find(x=>x.id===me.id); if (!u) return false;
+  const name = $('#accName').value.trim(), username = $('#accUsername').value.trim();
+  const oldPass = $('#accOldPass').value, newPass = $('#accNewPass').value, newPass2 = $('#accNewPass2').value;
   const msg = $('#accMsg');
   if (!name || !username) { msg.innerHTML = '<div class="alert alert-error">أكمل الحقول.</div>'; return false; }
-  if (username !== u.username && DATA.users.some(x => x.username === username && x.id !== u.id)) {
-    msg.innerHTML = '<div class="alert alert-error">اسم المستخدم مستخدم.</div>'; return false;
-  }
+  if (username !== u.username && DATA.users.some(x => x.username === username && x.id !== u.id)) { msg.innerHTML = '<div class="alert alert-error">اسم المستخدم مستخدم.</div>'; return false; }
   if (newPass || newPass2) {
     if (!oldPass) { msg.innerHTML = '<div class="alert alert-error">أدخل كلمة المرور الحالية.</div>'; return false; }
     const oldH = await hash(oldPass);
@@ -893,7 +882,6 @@ function viewDashboard(){
   const absent = todayAtt.filter(a=>a.status==='غائب').length;
   const myExams = myExamsList();
   const myGrades = DATA.grades.filter(g=>mySt.some(s=>s.id===g.studentId));
-  const todayTeacher = DATA.teacherAttendance?.find(a => a.userId === me.id && a.date === today());
   return `
     <div class="container">
       <div class="stats">
@@ -910,9 +898,7 @@ function viewDashboard(){
         <button class="btn btn-secondary" onclick="window.go('grades')"><i class="fas fa-star"></i> الدرجات</button>
         <button class="btn btn-secondary" onclick="window.go('exams')"><i class="fas fa-pencil-alt"></i> الاختبارات</button>
         <button class="btn btn-secondary" onclick="window.go('leaderboard')"><i class="fas fa-trophy"></i> أفضل الطلاب</button>
-        <button class="btn btn-success" onclick="window.viewBarcode('teacher','${me.id}')"><i class="fas fa-barcode"></i> باركودي</button>
       </div>
-      ${todayTeacher ? `<div class="alert alert-success"><i class="fas fa-check-circle"></i> حضورك مسجل اليوم (${esc(todayTeacher.status)})</div>` : `<div class="alert alert-warning"><i class="fas fa-clock"></i> لم يتم تسجيل حضورك اليوم — <a href="#" onclick="window.markTeacherAttendance();return false;">سجّل الآن</a></div>`}
       <div class="card">
         <div class="card-head"><h3><i class="fas fa-clock"></i> حضور اليوم</h3></div>
         ${todayAtt.length===0 ? '<div class="empty"><i class="fas fa-inbox"></i><div>لا توجد سجلات اليوم</div></div>' : `
@@ -926,13 +912,6 @@ function viewDashboard(){
       </div>
     </div>`;
 }
-window.markTeacherAttendance = async function(){
-  if (!DATA.teacherAttendance) DATA.teacherAttendance = [];
-  const ex = DATA.teacherAttendance.find(a => a.userId === me.id && a.date === today());
-  if (ex) { toast('حضورك مسجل بالفعل', 'info'); return; }
-  DATA.teacherAttendance.push({ id: uid('ta_'), userId: me.id, date: today(), status: 'حاضر', at: nowIso() });
-  await saveData(); toast('✅ تم تسجيل حضورك', 'success'); render();
-};
 
 /* ============ ANALYTICS ============ */
 function viewAnalytics(){
@@ -1103,11 +1082,9 @@ window.exportAttendance = function(fmt){
       const sec = DATA.sections.find(s=>s.id===st?.sectionId);
       csv += `"${st?.name||''}","${sec?.name||''}","${a.date}","${a.status}","${(a.note||'').replace(/"/g,'""')}"\n`;
     });
-    const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
-    downloadBlob(blob, `attendance-${today()}.csv`);
+    downloadBlob(new Blob([csv], {type:'text/csv;charset=utf-8'}), `attendance-${today()}.csv`);
   } else {
-    const blob = new Blob([JSON.stringify(list, null, 2)], {type:'application/json'});
-    downloadBlob(blob, `attendance-${today()}.json`);
+    downloadBlob(new Blob([JSON.stringify(list, null, 2)], {type:'application/json'}), `attendance-${today()}.json`);
   }
   toast('تم التصدير', 'success');
 };
@@ -1116,25 +1093,6 @@ function downloadBlob(blob, name){
   const a = document.createElement('a'); a.href = url; a.download = name;
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(()=>URL.revokeObjectURL(url), 1500);
-}
-
-/* ============ TEACHER ATTENDANCE ============ */
-function viewTeacherAtt(){
-  const mine = (DATA.teacherAttendance||[]).filter(a => a.userId === me.id).sort((a,b)=>b.date.localeCompare(a.date));
-  return `
-    <div class="container">
-      <div class="card" style="margin-bottom:14px">
-        <div class="card-head">
-          <h3><i class="fas fa-user-check"></i> حضوري (${mine.length})</h3>
-          <button class="btn btn-primary" onclick="window.markTeacherAttendance()"><i class="fas fa-check"></i> سجّل حضور اليوم</button>
-        </div>
-        ${mine.length===0 ? '<div class="empty"><i class="fas fa-inbox"></i><div>لا سجلات</div></div>' : `
-        <div class="table-wrap"><table>
-          <thead><tr><th>التاريخ</th><th>الحالة</th></tr></thead>
-          <tbody>${mine.map(a => `<tr><td>${esc(a.date)}</td><td><span class="badge ${a.status==='حاضر'?'badge-ok':'badge-bad'}">${esc(a.status)}</span></td></tr>`).join('')}</tbody>
-        </table></div>`}
-      </div>
-    </div>`;
 }
 
 /* ============ GRADES ============ */
@@ -1328,7 +1286,6 @@ window.changeQType = function(sel){
       opts.appendChild(item);
     });
   } else if (type === 'single') {
-    // تأكد أن كل radio له نفس الاسم
     opts.querySelectorAll('input[type=radio]').forEach((r,i) => { r.name = 'c_' + qid; if (i > 0) r.checked = false; });
   }
 };
@@ -1348,7 +1305,7 @@ window.saveExam = async function(ev){
   const id = $('#examId').value;
   const name = $('#examName').value.trim();
   const classId = $('#examClass').value;
-  if (!name || !classId) return toast('أكمل الحقول', 'warning'), false;
+  if (!name || !classId) return toast('أكمل', 'warning'), false;
   const questions = [];
   let valid = true;
   $$('#questionsBox .q-card').forEach((card, i) => {
@@ -1363,12 +1320,12 @@ window.saveExam = async function(ev){
     } else { modelAnswer = card.querySelector('.q-model').value.trim(); }
     if (!text) { valid = false; toast(`السؤال ${i+1}: النص مطلوب`, 'warning'); return; }
     if ((type==='single'||type==='multiple') && options.length < 2) { valid = false; toast(`السؤال ${i+1}: خياران على الأقل`, 'warning'); return; }
-    if ((type==='single'||type==='truefalse') && !correct) { valid = false; toast(`السؤال ${i+1}: حدد الإجابة الصحيحة`, 'warning'); return; }
+    if ((type==='single'||type==='truefalse') && !correct) { valid = false; toast(`السؤال ${i+1}: حدد الإجابة`, 'warning'); return; }
     if (type==='single' && correct.split(',').length > 1) { valid = false; toast(`السؤال ${i+1}: اختيار واحد فقط`, 'warning'); return; }
     questions.push({ id: qid, text, type, points, options, correct, modelAnswer });
   });
   if (!valid) return false;
-  if (questions.length === 0) return toast('أضف سؤالاً واحداً على الأقل', 'warning'), false;
+  if (questions.length === 0) return toast('أضف سؤالاً', 'warning'), false;
   const data = {
     name, description: $('#examDescription').value.trim(),
     duration: Math.max(1, +$('#examDuration').value || 30),
@@ -1379,13 +1336,8 @@ window.saveExam = async function(ev){
     questions, totalPoints: questions.reduce((s,q)=>s+q.points,0),
     teacherId: me.id
   };
-  if (id) {
-    const ex = DATA.exams.find(e=>e.id===id);
-    if (!ex) return toast('غير موجود', 'error'), false;
-    Object.assign(ex, data);
-  } else {
-    DATA.exams.push({ id: uid('ex_'), code: genCode(8), ...data, createdAt: nowIso() });
-  }
+  if (id) { const ex = DATA.exams.find(e=>e.id===id); if (ex) Object.assign(ex, data); }
+  else DATA.exams.push({ id: uid('ex_'), code: genCode(8), ...data, createdAt: nowIso() });
   await saveData(); toast('تم الحفظ', 'success'); closeModal('mExam'); render(); return false;
 };
 window.deleteExam = function(id){
@@ -1396,96 +1348,394 @@ window.deleteExam = function(id){
   });
 };
 
-/* ============ LOOKUP ============ */
-function viewLookup(){
+/* ============ PLATFORMS ============ */
+function viewPlatforms(){
   return `
-    <div class="auth-wrap">
-      <div class="auth-card">
-        <div class="auth-icon"><i class="fas fa-search"></i></div>
-        <div class="auth-title">استعلام طالب</div>
-        <div class="auth-sub">أدخل الكود أو امسح الباركود لعرض الحضور والدرجات</div>
-        <form class="form" onsubmit="return window.doLookup(event)">
-          <div class="field"><label>كود الطالب</label><input class="input" name="code" required maxlength="8" style="text-transform:uppercase;font-family:monospace;letter-spacing:2px;text-align:center;font-size:16px" /></div>
-          <button class="btn btn-primary btn-block" type="submit"><i class="fas fa-search"></i> بحث</button>
-          <button type="button" class="btn btn-secondary btn-block" onclick="window.startScan()"><i class="fas fa-barcode"></i> مسح الباركود</button>
-        </form>
-        <div id="lookupResult" style="margin-top:14px"></div>
+    <div class="container">
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-head">
+          <h3><i class="fas fa-globe"></i> منصات الطلاب (كيريو وأي منصة)</h3>
+          <button class="btn btn-primary btn-sm" onclick="window.openPlatformAdd()"><i class="fas fa-plus"></i> إضافة منصة</button>
+        </div>
+        <p class="muted" style="font-size:12.5px">أضف منصة (كيريو، Google Classroom، إلخ)، ثم حدد حقولها (مثل username, password, email)، ثم أدخل بيانات كل طالب.</p>
+        ${DATA.platforms.length===0 ? '<div class="empty"><i class="fas fa-globe"></i><div>لا منصات مضافة</div></div>' : `
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px">
+          ${DATA.platforms.map(p => {
+            const usage = DATA.studentPlatforms.filter(sp => sp.platformId === p.id).length;
+            return `<div class="platform-card">
+              <div class="plat-head">
+                <div class="plat-logo" style="background:${esc(p.color||'#0f766e')}">${esc((p.name||'?').charAt(0))}</div>
+                <div style="flex:1;min-width:0">
+                  <div class="plat-name">${esc(p.name)}</div>
+                  <div class="plat-sub">${usage} طالب مسجّل</div>
+                </div>
+                <div class="actions">
+                  <button class="btn btn-secondary btn-xs" onclick="window.viewPlatformStudents('${p.id}')" title="بيانات الطلاب"><i class="fas fa-users"></i></button>
+                  <button class="btn btn-warn btn-xs" onclick="window.openPlatformEdit('${p.id}')" title="تعديل"><i class="fas fa-edit"></i></button>
+                  <button class="btn btn-danger btn-xs" onclick="window.deletePlatform('${p.id}')" title="حذف"><i class="fas fa-trash"></i></button>
+                </div>
+              </div>
+              <div style="font-size:11.5px;color:var(--text-3);margin-bottom:6px">الحقول: ${(p.fields||[]).map(f=>`<span class="chip">${esc(f.name)}</span>`).join(' ')||'—'}</div>
+            </div>`;
+          }).join('')}
+        </div>`}
+      </div>
+      <div class="card">
+        <div class="card-head"><h3><i class="fas fa-users"></i> بيانات الطلاب في المنصات</h3></div>
+        ${DATA.studentPlatforms.length===0 ? '<div class="empty"><div>لا بيانات</div></div>' : `
+        <div class="table-wrap"><table>
+          <thead><tr><th>الطالب</th><th>المنصة</th><th>البيانات</th><th>إجراء</th></tr></thead>
+          <tbody>${DATA.studentPlatforms.map(sp => {
+            const st = DATA.students.find(s=>s.id===sp.studentId);
+            const pl = DATA.platforms.find(p=>p.id===sp.platformId);
+            if (!st || !pl) return '';
+            const fields = (pl.fields||[]).map(f => `${esc(f.name)}: <code style="font-family:monospace">${esc(sp.values[f.id]||'—')}</code>`).join(' • ');
+            return `<tr>
+              <td>${esc(st.name)}</td>
+              <td><span class="chip" style="background:${esc(pl.color)}20;color:${esc(pl.color)}">${esc(pl.name)}</span></td>
+              <td style="font-size:12px">${fields}</td>
+              <td><button class="btn btn-danger btn-xs" onclick="window.deleteStudentPlatform('${sp.id}')"><i class="fas fa-trash"></i></button></td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table></div>`}
       </div>
     </div>`;
 }
-function showStudentReport(code){
-  const st = DATA.students.find(s=>s.code===code);
-  const box = $('#lookupResult');
-  if (!box) return;
-  if (!st) { box.innerHTML = '<div class="alert alert-error"><i class="fas fa-times-circle"></i> كود غير صحيح</div>'; return; }
-  const cls = DATA.classes.find(c=>c.id===st.classId);
-  const sec = DATA.sections.find(s=>s.id===st.sectionId);
-  const att = DATA.attendance.filter(a=>a.targetId===st.id&&a.targetType==='student').sort((a,b)=>b.date.localeCompare(a.date));
-  const grades = DATA.grades.filter(g=>g.studentId===st.id);
-  const results = DATA.examResults.filter(r=>r.studentId===st.id && r.status==='completed');
-  box.innerHTML = `
-    <div class="card">
-      <h3 style="font-size:15px;margin-bottom:4px"><i class="fas fa-user-graduate" style="color:var(--primary)"></i> ${esc(st.name)}</h3>
-      <div class="muted" style="margin-bottom:12px">${esc(cls?.name||'')} — ${esc(sec?.name||'')}</div>
-      <h4 style="font-size:13.5px;margin-bottom:6px"><i class="fas fa-clipboard-list"></i> الحضور (${att.length})</h4>
-      ${att.length ? `<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px">${att.slice(0,15).map(a=>`<span class="badge ${a.status==='حاضر'?'badge-ok':'badge-bad'}">${esc(a.date)}</span>`).join('')}</div>` : '<div class="muted" style="margin-bottom:12px">لا سجلات</div>'}
-      <h4 style="font-size:13.5px;margin-bottom:6px"><i class="fas fa-star"></i> الدرجات (${grades.length})</h4>
-      ${grades.length ? `<div class="table-wrap" style="margin-bottom:12px"><table><thead><tr><th>المادة</th><th>النوع</th><th>الدرجة</th></tr></thead><tbody>${grades.map(g => `<tr><td>${esc(DATA.subjects.find(s=>s.id===g.subjectId)?.name||'—')}</td><td>${esc(g.kind)}</td><td><span class="badge ${g.score>=g.max*0.5?'badge-ok':'badge-bad'}">${g.score}/${g.max}</span></td></tr>`).join('')}</tbody></table></div>` : '<div class="muted" style="margin-bottom:12px">لا درجات</div>'}
-      <h4 style="font-size:13.5px;margin-bottom:6px"><i class="fas fa-pencil-alt"></i> الاختبارات (${results.length})</h4>
-      ${results.length ? `<div class="table-wrap"><table><thead><tr><th>الاختبار</th><th>الدرجة</th></tr></thead><tbody>${results.map(r => `<tr><td>${esc(DATA.exams.find(e=>e.id===r.examId)?.name||'—')}</td><td><span class="badge ${r.score>=r.max*0.5?'badge-ok':'badge-bad'}">${r.score}/${r.max}</span></td></tr>`).join('')}</tbody></table></div>` : '<div class="muted">لا مشاركات</div>'}
+
+window.openPlatformAdd = function(){
+  $('#platformModalTitle').textContent = 'إضافة منصة';
+  $('#platformId').value = '';
+  $('#platformName').value = '';
+  $('#platformColor').value = '#0f766e';
+  $('#platformFields').innerHTML = '';
+  addPlatformField('اسم المستخدم', 'username');
+  addPlatformField('كلمة المرور', 'password');
+  openModal('mPlatform');
+};
+window.openPlatformEdit = function(id){
+  const p = DATA.platforms.find(x=>x.id===id); if (!p) return;
+  $('#platformModalTitle').textContent = 'تعديل منصة';
+  $('#platformId').value = p.id;
+  $('#platformName').value = p.name;
+  $('#platformColor').value = p.color || '#0f766e';
+  $('#platformFields').innerHTML = '';
+  (p.fields||[]).forEach(f => addPlatformField(f.name, f.key, f.id));
+  openModal('mPlatform');
+};
+window.addPlatformField = function(name='', key='', id=''){
+  const container = $('#platformFields');
+  if (!container) return;
+  const fid = id || uid('f_');
+  const row = document.createElement('div');
+  row.className = 'field-dyn';
+  row.dataset.fid = fid;
+  row.innerHTML = `
+    <input class="input pf-name" placeholder="اسم الحقل (مثل: البريد)" value="${esc(name)}" />
+    <input class="input pf-key" placeholder="المفتاح" value="${esc(key)}" style="max-width:120px" />
+    <button type="button" class="btn btn-danger btn-xs" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+  `;
+  container.appendChild(row);
+};
+window.savePlatform = async function(ev){
+  ev.preventDefault();
+  const id = $('#platformId').value;
+  const name = $('#platformName').value.trim();
+  const color = $('#platformColor').value;
+  if (!name) return toast('اسم المنصة مطلوب', 'warning'), false;
+  const fields = [];
+  $$('#platformFields .field-dyn').forEach(row => {
+    const fName = row.querySelector('.pf-name').value.trim();
+    const fKey = row.querySelector('.pf-key').value.trim();
+    const fid = row.dataset.fid;
+    if (fName) fields.push({ id: fid, name: fName, key: fKey || fid });
+  });
+  if (fields.length === 0) return toast('أضف حقلاً واحداً على الأقل', 'warning'), false;
+  if (id) {
+    const p = DATA.platforms.find(x=>x.id===id);
+    if (!p) return false;
+    p.name = name; p.color = color; p.fields = fields;
+  } else {
+    DATA.platforms.push({ id: uid('pl_'), name, color, fields, createdAt: nowIso() });
+  }
+  await saveData(); toast('تم حفظ المنصة', 'success'); closeModal('mPlatform'); render(); return false;
+};
+window.deletePlatform = function(id){
+  const p = DATA.platforms.find(x=>x.id===id); if (!p) return;
+  askConfirm(`حذف منصة "${p.name}" وكل بياناتها؟`, async () => {
+    DATA.platforms = DATA.platforms.filter(x=>x.id!==id);
+    DATA.studentPlatforms = DATA.studentPlatforms.filter(x=>x.platformId!==id);
+    await saveData(); render();
+  });
+};
+window.viewPlatformStudents = function(platformId){
+  const p = DATA.platforms.find(x=>x.id===platformId); if (!p) return;
+  const mySt = myStudents();
+  const entries = DATA.studentPlatforms.filter(sp => sp.platformId === platformId && mySt.some(s=>s.id===sp.studentId));
+  $('#platformStudentsTitle').textContent = `بيانات ${p.name} (${entries.length})`;
+  $('#platformStudentsBody').innerHTML = `
+    <div style="margin-bottom:12px">
+      <button class="btn btn-primary btn-sm" onclick="window.openStudentPlatformAdd('${platformId}')"><i class="fas fa-plus"></i> إضافة بيانات لطالب</button>
+    </div>
+    ${entries.length === 0 ? '<div class="empty">لا بيانات</div>' : `
+    <div class="table-wrap"><table>
+      <thead><tr><th>الطالب</th><th>البيانات</th><th>إجراء</th></tr></thead>
+      <tbody>${entries.map(sp => {
+        const st = DATA.students.find(s=>s.id===sp.studentId);
+        if (!st) return '';
+        const fields = (p.fields||[]).map(f => `${esc(f.name)}: <code>${esc(sp.values[f.id]||'—')}</code>`).join(' • ');
+        return `<tr><td>${esc(st.name)}</td><td style="font-size:12px">${fields}</td>
+          <td><button class="btn btn-warn btn-xs" onclick="window.editStudentPlatform('${sp.id}')"><i class="fas fa-edit"></i></button>
+              <button class="btn btn-danger btn-xs" onclick="window.deleteStudentPlatform('${sp.id}')"><i class="fas fa-trash"></i></button></td></tr>`;
+      }).join('')}</tbody>
+    </table></div>`}`;
+  openModal('mPlatformStudents');
+};
+window.openStudentPlatformAdd = function(platformId){
+  const p = DATA.platforms.find(x=>x.id===platformId); if (!p) return;
+  const mySt = myStudents();
+  $('#spModalTitle').textContent = `إضافة بيانات ${p.name}`;
+  $('#spId').value = '';
+  $('#spPlatformId').value = platformId;
+  $('#spStudentSelect').innerHTML = `<option value="">اختر طالب</option>${mySt.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('')}`;
+  $('#spStudentSelect').disabled = false;
+  $('#spFieldsBox').innerHTML = (p.fields||[]).map(f => `
+    <div class="field"><label>${esc(f.name)}</label><input class="input sp-field" data-fid="${f.id}" placeholder="${esc(f.name)}" /></div>
+  `).join('');
+  openModal('mStudentPlatform');
+};
+window.editStudentPlatform = function(id){
+  const sp = DATA.studentPlatforms.find(x=>x.id===id); if (!sp) return;
+  const p = DATA.platforms.find(x=>x.id===sp.platformId); if (!p) return;
+  const st = DATA.students.find(s=>s.id===sp.studentId);
+  $('#spModalTitle').textContent = `تعديل بيانات ${st?.name||''} — ${p.name}`;
+  $('#spId').value = id;
+  $('#spPlatformId').value = sp.platformId;
+  $('#spStudentSelect').innerHTML = `<option value="${sp.studentId}" selected>${esc(st?.name||'')}</option>`;
+  $('#spStudentSelect').disabled = true;
+  $('#spFieldsBox').innerHTML = (p.fields||[]).map(f => `
+    <div class="field"><label>${esc(f.name)}</label><input class="input sp-field" data-fid="${f.id}" value="${esc(sp.values[f.id]||'')}" placeholder="${esc(f.name)}" /></div>
+  `).join('');
+  openModal('mStudentPlatform');
+};
+window.saveStudentPlatform = async function(ev){
+  ev.preventDefault();
+  const id = $('#spId').value;
+  const platformId = $('#spPlatformId').value;
+  const studentId = $('#spStudentSelect').value;
+  if (!studentId) return toast('اختر طالباً', 'warning'), false;
+  const values = {};
+  $$('#spFieldsBox .sp-field').forEach(inp => { values[inp.dataset.fid] = inp.value.trim(); });
+  if (id) {
+    const sp = DATA.studentPlatforms.find(x=>x.id===id);
+    if (sp) sp.values = values;
+  } else {
+    if (DATA.studentPlatforms.some(sp => sp.platformId === platformId && sp.studentId === studentId)) {
+      return toast('هذا الطالب مسجل بالفعل في المنصة', 'warning'), false;
+    }
+    DATA.studentPlatforms.push({ id: uid('sp_'), platformId, studentId, values, createdAt: nowIso() });
+  }
+  await saveData(); toast('تم الحفظ', 'success'); closeModal('mStudentPlatform'); render();
+  const psModal = document.getElementById('mPlatformStudents');
+  if (psModal?.classList.contains('open')) viewPlatformStudents(platformId);
+  return false;
+};
+window.deleteStudentPlatform = function(id){
+  askConfirm('حذف البيانات؟', async () => {
+    DATA.studentPlatforms = DATA.studentPlatforms.filter(x=>x.id!==id);
+    await saveData(); render();
+    const psModal = document.getElementById('mPlatformStudents');
+    if (psModal?.classList.contains('open')) {
+      const body = $('#platformStudentsBody');
+      if (body) body.closest('.modal')?.classList.remove('open');
+    }
+  });
+};
+
+/* ============ TIMETABLES (VIEW) ============ */
+const DAYS = ['السبت','الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'];
+function viewTimetables(){
+  const mySecs = mySections().map(id => DATA.sections.find(s=>s.id===id)).filter(Boolean);
+  return `
+    <div class="container">
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-head"><h3><i class="fas fa-calendar-alt"></i> جداول الحصص</h3></div>
+        <p class="muted" style="font-size:12.5px">هذه الجداول أُنشئت من قبل الأدمن لكل فصل. يمكنك رؤية جدول الفصول المسندة إليك.</p>
+      </div>
+      ${mySecs.length===0 ? '<div class="card empty"><div>لا فصول مسندة</div></div>' : mySecs.map(sec => {
+        const cls = DATA.classes.find(c=>c.id===sec.classId);
+        const tt = DATA.timetables.find(t=>t.sectionId===sec.id);
+        return `<div class="card" style="margin-bottom:14px">
+          <div class="card-head"><h3><i class="fas fa-door-open"></i> ${esc(cls?.name||'')} — ${esc(sec.name)}</h3></div>
+          ${!tt || !tt.entries || tt.entries.length === 0 ? '<div class="empty">لا جدول لهذا الفصل</div>' : renderTimetableHTML(tt)}
+        </div>`;
+      }).join('')}
     </div>`;
 }
-window.doLookup = function(ev){ ev.preventDefault(); showStudentReport(ev.target.code.value.trim().toUpperCase()); return false; };
+function renderTimetableHTML(tt){
+  const periods = [...new Set((tt.entries||[]).map(e=>e.period))].sort((a,b)=>a-b);
+  if (periods.length === 0) return '<div class="empty">لا حصص</div>';
+  let html = '<div style="overflow-x:auto"><table class="tt-table"><thead><tr><th>الحصة</th>';
+  DAYS.forEach(d => html += `<th>${d}</th>`);
+  html += '</tr></thead><tbody>';
+  periods.forEach(p => {
+    html += `<tr><td class="period">${p}</td>`;
+    DAYS.forEach(d => {
+      const e = (tt.entries||[]).find(x => x.day === d && x.period === p);
+      if (e) {
+        const subj = DATA.subjects.find(s=>s.id===e.subjectId);
+        const teacher = DATA.users.find(u=>u.id===e.teacherId);
+        html += `<td><div class="subject">${esc(subj?.name||'—')}</div><div class="teacher">${esc(teacher?.name||'—')}</div><div class="time">${esc(e.from||'')} - ${esc(e.to||'')}</div></td>`;
+      } else {
+        html += `<td class="empty-cell">—</td>`;
+      }
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table></div>';
+  return html;
+}
 
-/* ============ STUDENT REPORT ============ */
+/* ============ LOOKUP (STUDENT) ============ */
+function viewLookup(){
+  return `
+    <div class="container">
+      <div class="auth-wrap" style="max-width:520px">
+        <div class="auth-card">
+          <div class="auth-icon"><i class="fas fa-search"></i></div>
+          <div class="auth-title">استعلام الطالب</div>
+          <div class="auth-sub">أدخل كود الطالب أو امسح الباركود لعرض كل بياناته</div>
+          <form class="form" onsubmit="return window.doLookup(event)">
+            <div class="field"><label>كود الطالب</label><input class="input" name="code" required maxlength="8" style="text-transform:uppercase;font-family:monospace;letter-spacing:2px;text-align:center;font-size:16px" /></div>
+            <button class="btn btn-primary btn-block" type="submit"><i class="fas fa-search"></i> بحث</button>
+            <button type="button" class="btn btn-secondary btn-block" onclick="window.startScan()"><i class="fas fa-barcode"></i> مسح الباركود</button>
+          </form>
+          <div id="lookupResult" style="margin-top:14px"></div>
+        </div>
+      </div>
+    </div>`;
+}
+window.doLookup = function(ev){
+  ev.preventDefault();
+  const code = ev.target.code.value.trim().toUpperCase();
+  const st = DATA.students.find(s=>s.code===code);
+  const box = $('#lookupResult');
+  if (!st) { box.innerHTML = '<div class="alert alert-error"><i class="fas fa-times-circle"></i> كود غير صحيح</div>'; return false; }
+  renderStudentFullReport(st, box);
+  return false;
+};
+function renderStudentFullReport(st, box){
+  const cls = DATA.classes.find(c=>c.id===st.classId);
+  const sec = DATA.sections.find(s=>s.id===st.sectionId);
+  // Attendance
+  const att = DATA.attendance.filter(a=>a.targetId===st.id && a.targetType==='student').sort((a,b)=>b.date.localeCompare(a.date));
+  // Grades
+  const grades = DATA.grades.filter(g=>g.studentId===st.id);
+  // Exams: يجب أن تظهر للطالب
+  const visibleExams = DATA.exams.filter(e => {
+    if (!e.visible) return false;
+    if (e.status !== 'active' && e.status !== 'closed') return false;
+    if (e.sectionId && e.sectionId !== st.sectionId) return false;
+    if (e.classId && e.classId !== st.classId) return false;
+    return true;
+  });
+  // Results
+  const results = DATA.examResults.filter(r => r.studentId === st.id && r.status === 'completed');
+  // Platforms
+  const studentPlatformEntries = DATA.studentPlatforms.filter(sp => sp.studentId === st.id);
+  // Timetable
+  const tt = DATA.timetables.find(t => t.sectionId === st.sectionId);
+
+  box.innerHTML = `
+    <div style="text-align:center;margin-bottom:14px">
+      <div style="width:60px;height:60px;border-radius:50%;background:var(--primary);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;margin-bottom:8px">${esc(st.name.charAt(0))}</div>
+      <h3 style="font-size:18px;margin-bottom:2px">${esc(st.name)}</h3>
+      <div class="muted" style="font-size:13px">${esc(cls?.name||'')} — ${esc(sec?.name||'')}</div>
+      <code class="code-pill" style="margin-top:4px">${esc(st.code)}</code>
+    </div>
+
+    <!-- المنصات -->
+    <div class="card" style="margin-bottom:12px;padding:14px">
+      <h4 style="font-size:14px;margin-bottom:8px"><i class="fas fa-globe" style="color:var(--primary)"></i> منصاتي (${studentPlatformEntries.length})</h4>
+      ${studentPlatformEntries.length === 0 ? '<p class="muted" style="font-size:12px">لا منصات مسجلة</p>' : studentPlatformEntries.map(sp => {
+        const pl = DATA.platforms.find(p=>p.id===sp.platformId);
+        if (!pl) return '';
+        return `<div class="platform-card" style="margin-bottom:8px">
+          <div class="plat-head">
+            <div class="plat-logo" style="background:${esc(pl.color||'#0f766e')}">${esc((pl.name||'?').charAt(0))}</div>
+            <div style="flex:1;min-width:0">
+              <div class="plat-name">${esc(pl.name)}</div>
+            </div>
+          </div>
+          ${(pl.fields||[]).map(f => {
+            const val = sp.values[f.id] || '—';
+            const isPass = (f.key||'').toLowerCase().includes('pass');
+            return `<div class="field-row"><span class="lbl">${esc(f.name)}</span><span class="val ${isPass?'obscured':''}" ${isPass?'onclick="this.classList.toggle(\'obscured\')"':''}>${esc(val)}</span></div>`;
+          }).join('')}
+        </div>`;
+      }).join('')}
+    </div>
+
+    <!-- جدول الحصص -->
+    <div class="card" style="margin-bottom:12px;padding:14px">
+      <h4 style="font-size:14px;margin-bottom:8px"><i class="fas fa-calendar-alt" style="color:var(--primary)"></i> جدول الحصص</h4>
+      ${!tt || !tt.entries || tt.entries.length === 0 ? '<p class="muted" style="font-size:12px">لا جدول متاح</p>' : renderTimetableHTML(tt)}
+    </div>
+
+    <!-- الاختبارات -->
+    <div class="card" style="margin-bottom:12px;padding:14px">
+      <h4 style="font-size:14px;margin-bottom:8px"><i class="fas fa-pencil-alt" style="color:var(--primary)"></i> اختباراتي (${visibleExams.length})</h4>
+      ${visibleExams.length === 0 ? '<p class="muted" style="font-size:12px">لا اختبارات متاحة</p>' : visibleExams.map(ex => {
+        const r = results.find(rr=>rr.examId===ex.id);
+        const subj = DATA.subjects.find(s=>s.id===ex.subjectId);
+        return `<div style="background:var(--surface-2);border-radius:8px;padding:10px;margin-bottom:6px;font-size:13px">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+            <div><strong>${esc(ex.name)}</strong> <span class="muted" style="font-size:11.5px">${esc(subj?.name||'')}</span></div>
+            <div>
+              ${r ? `<span class="badge ${r.score>=r.max*0.5?'badge-ok':'badge-bad'}">${r.score}/${r.max}</span>` : `<span class="badge badge-warn">لم يشارك</span>`}
+            </div>
+          </div>
+          <div style="font-size:11.5px;color:var(--text-3);margin-top:4px">
+            <span>⏱️ ${ex.duration} دقيقة</span>
+            <span>📝 ${ex.questions.length} سؤال</span>
+            <span>🏆 ${ex.totalPoints} درجة</span>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+
+    <!-- الحضور -->
+    <div class="card" style="margin-bottom:12px;padding:14px">
+      <h4 style="font-size:14px;margin-bottom:8px"><i class="fas fa-clipboard-list" style="color:var(--primary)"></i> سجل الحضور (${att.length})</h4>
+      ${att.length ? `<div style="display:flex;flex-wrap:wrap;gap:4px">${att.slice(0,30).map(a=>`<span class="badge ${a.status==='حاضر'?'badge-ok':'badge-bad'}">${esc(a.date)}: ${esc(a.status)}</span>`).join('')}</div>` : '<p class="muted" style="font-size:12px">لا سجلات</p>'}
+    </div>
+
+    <!-- الدرجات -->
+    <div class="card" style="padding:14px">
+      <h4 style="font-size:14px;margin-bottom:8px"><i class="fas fa-star" style="color:var(--primary)"></i> الدرجات (${grades.length})</h4>
+      ${grades.length ? `<div class="table-wrap"><table><thead><tr><th>المادة</th><th>النوع</th><th>الدرجة</th></tr></thead><tbody>
+        ${grades.map(g=>`<tr><td>${esc(DATA.subjects.find(s=>s.id===g.subjectId)?.name||'—')}</td><td>${esc(g.kind)}</td><td><span class="badge ${g.score>=g.max*0.5?'badge-ok':'badge-bad'}">${g.score}/${g.max}</span></td></tr>`).join('')}
+      </tbody></table></div>` : '<p class="muted" style="font-size:12px">لا درجات</p>'}
+    </div>
+  `;
+}
+
+/* ============ STUDENT REPORT (INTERNAL) ============ */
 function viewStudentReport(id){
   const st = DATA.students.find(s=>s.id===id);
   if (!st) return '<div class="container"><div class="alert alert-error">طالب غير موجود</div></div>';
   if (!canAccessStudent(st)) return '<div class="container"><div class="alert alert-error">غير مصرح</div></div>';
-  const cls = DATA.classes.find(c=>c.id===st.classId);
-  const sec = DATA.sections.find(s=>s.id===st.sectionId);
-  const att = DATA.attendance.filter(a=>a.targetId===id&&a.targetType==='student').sort((a,b)=>b.date.localeCompare(a.date));
-  const grades = DATA.grades.filter(g=>g.studentId===id);
-  const results = DATA.examResults.filter(r=>r.studentId===id && r.status==='completed');
-  const svg = barcodeSVG(st.code, {h:80});
-  return `
-    <div class="container">
-      <div class="no-print" style="display:flex;gap:6px;margin-bottom:12px">
-        <button class="btn btn-secondary btn-sm" onclick="window.go('myStudents')"><i class="fas fa-arrow-right"></i> رجوع</button>
-        <button class="btn btn-primary btn-sm" onclick="window.print()"><i class="fas fa-print"></i> طباعة</button>
-      </div>
-      <div class="card" style="margin-bottom:14px">
-        <h2 style="font-size:1.3rem;">${esc(st.name)}</h2>
-        <p class="muted">${esc(cls?.name||'')} — ${esc(sec?.name||'')}</p>
-      </div>
-      <div class="card" style="margin-bottom:14px;text-align:center">
-        <div class="bc-box" style="max-width:320px;margin:0 auto">${svg}</div>
-        <div class="no-print" style="display:flex;justify-content:center;gap:6px;margin-top:10px">
-          <button class="btn btn-primary btn-sm" onclick="window.downloadBarcode('${esc(st.code)}')"><i class="fas fa-download"></i> تحميل</button>
-          <button class="btn btn-secondary btn-sm" onclick="window.copyText('${esc(st.code)}',this)"><i class="fas fa-copy"></i> نسخ</button>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
-        <div class="card">
-          <div class="card-head"><h3><i class="fas fa-clipboard-list"></i> الحضور (${att.length})</h3></div>
-          ${att.length ? att.map(a=>`<span class="badge ${a.status==='حاضر'?'badge-ok':'badge-bad'}" style="margin:2px">${esc(a.date)}</span>`).join(' ') : '<div class="muted">لا سجلات</div>'}
-        </div>
-        <div class="card">
-          <div class="card-head"><h3><i class="fas fa-star"></i> الدرجات (${grades.length})</h3></div>
-          ${grades.length ? grades.map(g=>`<div class="rank-row"><span>${esc(DATA.subjects.find(s=>s.id===g.subjectId)?.name||'—')}</span><span class="badge ${g.score>=g.max*0.5?'badge-ok':'badge-bad'}">${g.score}/${g.max}</span></div>`).join('') : '<div class="muted">لا درجات</div>'}
-        </div>
-        <div class="card">
-          <div class="card-head"><h3><i class="fas fa-pencil-alt"></i> الاختبارات (${results.length})</h3></div>
-          ${results.length ? results.map(r=>`<div class="rank-row"><span>${esc(DATA.exams.find(e=>e.id===r.examId)?.name||'—')}</span><span class="badge ${r.score>=r.max*0.5?'badge-ok':'badge-bad'}">${r.score}/${r.max}</span></div>`).join('') : '<div class="muted">لا مشاركات</div>'}
-        </div>
-      </div>
-    </div>`;
+  return `<div class="container">
+    <div class="no-print" style="display:flex;gap:6px;margin-bottom:12px">
+      <button class="btn btn-secondary btn-sm" onclick="window.go('myStudents')"><i class="fas fa-arrow-right"></i> رجوع</button>
+      <button class="btn btn-primary btn-sm" onclick="window.print()"><i class="fas fa-print"></i> طباعة</button>
+    </div>
+    <div id="studentReportBox"></div>
+  </div>`;
 }
 
 /* ============ LOGOUT ============ */
 window.logout = function(){ askConfirm('تسجيل الخروج؟', () => { me = null; clearMe(); go('home'); toast('تم', 'info'); }); };
 
-/* ============ DEBOUNCE ============ */
 let debounceTimers = {};
 window.debounceSet = function(key, val){
   clearTimeout(debounceTimers[key]);
@@ -1509,8 +1759,9 @@ function render(){
     case 'analytics': html = viewAnalytics(); break;
     case 'leaderboard': html = viewLeaderboard(); break;
     case 'myStudents': html = viewMyStudents(); break;
+    case 'platforms': html = viewPlatforms(); break;
+    case 'timetables': html = viewTimetables(); break;
     case 'attendance': html = viewAttendance(); break;
-    case 'teacherAtt': html = viewTeacherAtt(); break;
     case 'grades': html = viewGrades(); break;
     case 'exams': html = viewExams(); break;
     case 'lookup': html = viewLookup(); break;
@@ -1519,6 +1770,13 @@ function render(){
   }
   app.innerHTML = html;
   if (route === 'auth') authTab('login');
+  if (route === 'studentReport') {
+    const st = DATA.students.find(s=>s.id===routeParam);
+    if (st) {
+      const box = $('#studentReportBox');
+      if (box) renderStudentFullReport(st, box);
+    }
+  }
 }
 
 /* ============ INIT ============ */
@@ -1554,11 +1812,56 @@ Object.assign(window, {
   go, toggleTheme, openSidebar, closeSidebar,
   openModal, closeModal,
   startScan, closeScan, viewBarcode, downloadBarcode, copyText,
-  askConfirm, confirmYes, markAttendance, markTeacherAttendance,
+  askConfirm, confirmYes, markAttendance,
   openExam, saveExam, addQuestion, changeQType, addOpt, deleteExam, viewExamResults,
   openAccount, updateAccount,
-  exportAttendance, deleteAttendanceRecord, deleteAttendanceDay
+  exportAttendance, deleteAttendanceRecord, deleteAttendanceDay,
+  openPlatformAdd, openPlatformEdit, addPlatformField, savePlatform, deletePlatform,
+  viewPlatformStudents, openStudentPlatformAdd, editStudentPlatform, saveStudentPlatform, deleteStudentPlatform
 });
 </script>
+
+<!-- Platforms Modals -->
+<div class="modal" id="mPlatform"><div class="box">
+  <div class="modal-head"><h3><i class="fas fa-globe"></i> <span id="platformModalTitle">إضافة منصة</span></h3><button class="close-x" onclick="window.closeModal('mPlatform')"><i class="fas fa-times"></i></button></div>
+  <form class="form" onsubmit="return window.savePlatform(event)">
+    <input type="hidden" id="platformId" />
+    <div class="form-row">
+      <div class="field" style="flex:2"><label>اسم المنصة</label><input class="input" id="platformName" required placeholder="مثل: كيريو، Google Classroom" /></div>
+      <div class="field"><label>اللون</label><input class="input" type="color" id="platformColor" value="#0f766e" style="height:38px" /></div>
+    </div>
+    <div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <label style="font-size:13px;font-weight:700">الحقول (اسم المستخدم، كلمة المرور، ...)</label>
+        <button type="button" class="btn btn-secondary btn-xs" onclick="window.addPlatformField()"><i class="fas fa-plus"></i> إضافة حقل</button>
+      </div>
+      <div id="platformFields"></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="btn btn-primary" type="submit"><i class="fas fa-save"></i> حفظ</button>
+      <button type="button" class="btn btn-secondary" onclick="window.closeModal('mPlatform')">إلغاء</button>
+    </div>
+  </form>
+</div></div>
+
+<div class="modal" id="mPlatformStudents"><div class="box wide">
+  <div class="modal-head"><h3><i class="fas fa-users"></i> <span id="platformStudentsTitle">بيانات المنصة</span></h3><button class="close-x" onclick="window.closeModal('mPlatformStudents')"><i class="fas fa-times"></i></button></div>
+  <div id="platformStudentsBody"></div>
+</div></div>
+
+<div class="modal" id="mStudentPlatform"><div class="box">
+  <div class="modal-head"><h3><i class="fas fa-key"></i> <span id="spModalTitle">بيانات الطالب</span></h3><button class="close-x" onclick="window.closeModal('mStudentPlatform')"><i class="fas fa-times"></i></button></div>
+  <form class="form" onsubmit="return window.saveStudentPlatform(event)">
+    <input type="hidden" id="spId" />
+    <input type="hidden" id="spPlatformId" />
+    <div class="field"><label>الطالب</label><select class="input" id="spStudentSelect" required></select></div>
+    <div id="spFieldsBox"></div>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="btn btn-primary" type="submit"><i class="fas fa-save"></i> حفظ</button>
+      <button type="button" class="btn btn-secondary" onclick="window.closeModal('mStudentPlatform')">إلغاء</button>
+    </div>
+  </form>
+</div></div>
+
 </body>
-                                                   </html>
+        </html>
