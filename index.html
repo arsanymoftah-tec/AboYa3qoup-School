@@ -2368,6 +2368,8 @@ function render(){
   applyTheme(theme);
   const app = $('#app');
   app.innerHTML = '<div style="text-align:center;padding:60px 20px"><i class="fas fa-spinner fa-spin" style="font-size:32px;color:var(--primary)"></i><div style="margin-top:16px;color:var(--text-2)">جارِ الاتصال...</div></div>';
+  // انتظار بسيط لتهيئة App Check
+  await new Promise(r => setTimeout(r, 800));
   const res = await loadData();
   if (!res.ok) {
     app.innerHTML = `<div class="container"><div class="auth-wrap"><div class="auth-card" style="max-width:560px">
