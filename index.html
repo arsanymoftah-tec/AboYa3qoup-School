@@ -11,8 +11,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<!-- مفتاح Google Cloud (Key ID) الخاص بـ reCAPTCHA Enterprise -->
-<script src="https://www.google.com/recaptcha/enterprise.js?render=6LdtNP4tAAAAAAdnJZZsw5nRij6dzTGLF-tezG1V"></script>
+  <!-- استخدم مفتاح Google Cloud (Key ID) هنا -->
+<script src="https://www.google.com/recaptcha/enterprise.js?render=6LeJOf4tAAAAAAlgAtEDP5RGTvou3B-_BE137Lx1"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -502,8 +502,15 @@ td .actions{display:flex;gap:4px;flex-wrap:wrap}
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app-check.js";
+
+// ... بعد initializeApp ...
+
+const appCheck = initializeAppCheck(fbApp, {
+  provider: new ReCaptchaEnterpriseProvider('6LeJOf4tAAAAAAlgAtEDP5RGTvou3B-_BE137Lx1'), // ضع الـ Key ID هنا
+  isTokenAutoRefreshEnabled: true
+});
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDN_oCsbmOxEfIH_D6Vju1AZK3pkpQr-DY",
@@ -514,17 +521,7 @@ const firebaseConfig = {
   appId: "1:137098154880:web:a083a8fceff11a2f51f605",
   measurementId: "G-JNWZ745V4J"
 };
-
-// 1. تهيئة Firebase أولاً
 const fbApp = initializeApp(firebaseConfig);
-
-// 2. تفعيل App Check
-const appCheck = initializeAppCheck(fbApp, {
-  provider: new ReCaptchaEnterpriseProvider('6LdtNP4tAAAAAAdnJZZsw5nRij6dzTGLF-tezG1V'),
-  isTokenAutoRefreshEnabled: true
-});
-
-// 3. تعريف قاعدة البيانات
 const db = getFirestore(fbApp);
 const DOC_REF = doc(db, "school-management", "data");
 
@@ -627,13 +624,10 @@ async function loadData(){
     DATA = migrate(DEFAULT_DB());
     try { await setDoc(DOC_REF, { payload: DATA }); return { ok: true, created: true }; }
     catch(e) {
-      console.error("Firebase Write Error:", e);
-      if (e.code === 'permission-denied') return { ok: false, message: 'قواعد الأمان تمنع الكتابة، أو أن App Check يرفض الطلب (تأكد من إعداداته).' };
+      if (e.code === 'permission-denied') return { ok: false, message: 'قواعد الأمان تمنع الكتابة. Firebase → Firestore → Rules → allow read, write: if true;' };
       return { ok: false, message: 'خطأ: ' + (e.message || 'غير معروف') };
     }
   } catch(e) {
-    console.error("Firebase Read Error:", e);
-    if (e.code === 'permission-denied') return { ok: false, message: '⛔ Firebase يرفض قراءة البيانات! تأكد من تفعيل App Check بشكل صحيح، وأن الدومين الحالي مسجل في إعدادات reCAPTCHA.' };
     if (e.code === 'not-found') return { ok: false, message: 'قاعدة Firestore غير موجودة.' };
     return { ok: false, message: 'تعذر الاتصال: ' + (e.message || 'تحقق من الإنترنت') };
   }
@@ -674,11 +668,13 @@ function applyTheme(t){
 }
 function toggleTheme(){
   applyTheme(theme === 'light' ? 'dark' : 'light');
+  // re-render charts with new theme
   setTimeout(() => { if (route === 'analytics') initCharts(); }, 100);
 }
 function openSidebar(){ $('#sidebar').classList.add('open'); $('#backdrop').style.display = 'block'; }
 function closeSidebar(){ $('#sidebar').classList.remove('open'); $('#backdrop').style.display = 'none'; }
 function go(r, param=null){
+  // destroy charts before navigation
   Object.keys(charts).forEach(k => { try { charts[k].destroy(); } catch(e){} });
   charts = {};
   route = r; routeParam = param; closeSidebar(); render(); window.scrollTo({top:0, behavior:'smooth'});
@@ -819,6 +815,7 @@ function myClasses(){
   const secs = mySections().map(sid => DATA.sections.find(s=>s.id===sid)).filter(Boolean);
   return [...new Set(secs.map(s=>s.classId))];
 }
+// المنصات المتاحة للمعلم: التي صفها/فصلها/مادتها في نطاقه
 function myPlatforms(){
   if (!me) return [];
   if (me.role === 'admin') return DATA.platforms;
@@ -835,7 +832,9 @@ function myPlatforms(){
 function canEditPlatform(p){
   if (!me) return false;
   if (me.role === 'admin') return true;
+  // created by me
   if (p.createdBy === me.id) return true;
+  // belongs to my sections/classes/subjects
   const mySecs = mySections(), mySubs = mySubjects(), myCls = myClasses();
   if (p.sectionId && mySecs.includes(p.sectionId)) return true;
   if (!p.sectionId && p.classId && myCls.includes(p.classId)) return true;
@@ -1380,7 +1379,7 @@ window.deleteStudent = function(id){
   });
 };
 
-/* ============ PLATFORMS ============ */
+/* ============ PLATFORMS (NEW) ============ */
 function viewPlatforms(){
   const visiblePlatforms = myPlatforms();
   return `
@@ -1436,6 +1435,7 @@ window.openPlatformAdd = function(){
   $('#platformMsg').innerHTML = '';
   addPlatformField('اسم المستخدم', 'username');
   addPlatformField('كلمة المرور', 'password');
+  // Fill allowed classes
   const myCls = myClasses();
   $('#platformClass').innerHTML = `<option value="">اختر الصف</option>${myCls.map(cid => {
     const c = DATA.classes.find(x=>x.id===cid);
@@ -1559,6 +1559,7 @@ window.openStudentPlatformAdd = function(platformId){
   $('#spModalTitle').textContent = `إضافة بيانات ${p.name}`;
   $('#spId').value = '';
   $('#spPlatformId').value = platformId;
+  // Students in this platform's scope
   const scopedStudents = DATA.students.filter(s => {
     if (p.sectionId && s.sectionId !== p.sectionId) return false;
     if (!p.sectionId && p.classId && s.classId !== p.classId) return false;
@@ -2368,8 +2369,6 @@ function render(){
   applyTheme(theme);
   const app = $('#app');
   app.innerHTML = '<div style="text-align:center;padding:60px 20px"><i class="fas fa-spinner fa-spin" style="font-size:32px;color:var(--primary)"></i><div style="margin-top:16px;color:var(--text-2)">جارِ الاتصال...</div></div>';
-  // انتظار بسيط لتهيئة App Check
-  await new Promise(r => setTimeout(r, 800));
   const res = await loadData();
   if (!res.ok) {
     app.innerHTML = `<div class="container"><div class="auth-wrap"><div class="auth-card" style="max-width:560px">
@@ -2408,4 +2407,4 @@ Object.assign(window, {
 });
 </script>
 </body>
-                                                                                                                                                    </html>
+  </html>
