@@ -567,15 +567,8 @@ td .actions{display:flex;gap:4px;flex-wrap:wrap}
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app-check.js";
-
-// ... بعد initializeApp ...
-
-const appCheck = initializeAppCheck(fbApp, {
-  provider: new ReCaptchaEnterpriseProvider('6LeJOf4tAAAAAAlgAtEDP5RGTvou3B-_BE137Lx1'), // ضع الـ Key ID هنا
-  isTokenAutoRefreshEnabled: true
-});
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app-check.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDN_oCsbmOxEfIH_D6Vju1AZK3pkpQr-DY",
@@ -586,7 +579,12 @@ const firebaseConfig = {
   appId: "1:137098154880:web:a083a8fceff11a2f51f605",
   measurementId: "G-JNWZ745V4J"
 };
+  
 const fbApp = initializeApp(firebaseConfig);
+const appCheck = initializeAppCheck(fbApp, {
+  provider: new ReCaptchaEnterpriseProvider('6LeJOf4tAAAAAAlgAtEDP5RGTvou3B-_BE137Lx1'), // ضع الـ Key ID هنا
+  isTokenAutoRefreshEnabled: true
+});
 const db = getFirestore(fbApp);
 const DOC_REF = doc(db, "school-management", "data");
 
