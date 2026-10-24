@@ -11,9 +11,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <!-- استخدم مفتاح Google Cloud (Key ID) هنا -->
-<script src="https://www.google.com/recaptcha/enterprise.js?render=6LeJOf4tAAAAAAlgAtEDP5RGTvou3B-_BE137Lx1"></script>
-<style>
+  <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
   --bg:#f4f6f9;--surface:#fff;--surface-2:#f9fafb;--border:#e5e7eb;
@@ -567,14 +565,6 @@ td .actions{display:flex;gap:4px;flex-wrap:wrap}
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app-check.js";
-
-// ... بعد initializeApp ...
-
-const appCheck = initializeAppCheck(fbApp, {
-  provider: new ReCaptchaEnterpriseProvider('6LeJOf4tAAAAAAlgAtEDP5RGTvou3B-_BE137Lx1'), // ضع الـ Key ID هنا
-  isTokenAutoRefreshEnabled: true
-});
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
 const firebaseConfig = {
